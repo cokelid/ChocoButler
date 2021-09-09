@@ -1,9 +1,9 @@
 # ChocoButler - An automated updater for Chocolatey
-ChocoButler is a small app that works with [Chocolatey](https://chocolatey.org/), periodically checking for outdated packages that can be upgraded.
-
-Rather than running upgrades on a fixed schedule, ChocoButler alerts you when updates are available and allows to start the upgrades at a time convenient for you. If you just want regular, scheduled updates without user interaction there are better ways to achieve this (though you can do that too with ChocoButler if you really want to).
+ChocoButler is a small app that works with [Chocolatey](https://chocolatey.org/), periodically checking for outdated packages, and allowing them to be upgraded.
 
 ChocoButler sits in the system tray (i.e. notification area) of Windows. Its icon changes colour and an alert pops-up when upgrades are available.
+
+Rather than running upgrades on a fixed schedule, ChocoButler alerts you when updates are available and allows you to start the upgrades at a time convenient for you. (If you just want regular, scheduled updates without user interaction there are better ways to achieve this, though you can do that too with ChocoButler if you really want to).
 
 
 ## Installation
@@ -13,7 +13,7 @@ You don't need to install ChocoButler - it's literally five files (a Powershell 
 
 To test it out, double click the `choco_butler.bat` file (or run the `choco_butler.ps1` file in Powershell, from where you can see logging messages).
 
-To set it up to run every time you start Windows, copy a shortcut of the .bat file to your startup folder as follow:
+To set it up to run every time you start Windows, copy a shortcut of the .bat file to your startup folder as follows:
 
 1) Open start-up folder: Press `Win+R` (to open run dialog), and type `shell:startup`
 2) Right-click on the `choco_butler.bat` file and copy, then "Paste shortcut" in the startup folder
