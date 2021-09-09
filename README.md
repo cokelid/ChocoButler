@@ -2,11 +2,13 @@
 
 ChocoButler is a small app that works with [Chocolatey](https://chocolatey.org/), periodically checking for outdated packages that can be upgraded.
 
-Rather than running upgrades on a fixed schedule, ChocoButler alerts you when updates are available and allows to start the upgrades at a time convenient for you If you just want regular, scheduled updates without user interaction there are better ways to achieve this (though you can do that too with ChocoButler if you really want to).
+Rather than running upgrades on a fixed schedule, ChocoButler alerts you when updates are available and allows to start the upgrades at a time convenient for you. If you just want regular, scheduled updates without user interaction there are better ways to achieve this (though you can do that too with ChocoButler if you really want to).
 
 ChocoButler sits in the system tray (i.e. notification area) of Windows. Its icon changes colour and an alert will pop-up when upgrades are avaiable.
 
 ## Installation
+In short: [download](https://github.com/cokelid/ChocoButler/archive/refs/heads/main.zip) the files, unzip to a folder, run the .bat file. Alternatively clone the [github repo](https://github.com/cokelid/ChocoButler.git) and run the .bat file.
+
 You don't need to install ChocoButler - it's literally five files (a Powershell script, a settings file, two icon files, and a .bat file to start it). Okay, six files including this README.
 
 To test it out, double click the `choco_butler.bat` file (or run the `choco_butler.ps1` file in Powershell, from where you can see logging messages).
@@ -24,9 +26,10 @@ The first check for outdated packages will occur 1 minute after you start ChocoB
 
 Normally the regular blue/brown Chocolatey icon is shown in the system tray. If packages are available for upgrade, the icon will turn red. When updated packages are found, a popup will display also.
 
-To install avaialble updates, right-click on the system tray icon and select "Install updates". From the icon you can see when the last update or check occurred. You can also start the Chocolatey GUI (if installed) via the icon, and exit ChocoButler too.
+To install available updates, right-click on the system tray icon and select "Install updates". The will install **all** available packages updates, you cannot select a subset.
 
-Updates are 
+By right-clicking the ChocoButler icon you can see when the last update or check occurred. You can also start the Chocolatey GUI (if installed) via the icon, and exit ChocoButler too.
+ 
 
 ## Configuration & Settings
 Settings exist in the `settings.json` text file. Edit this file to configure ChocoButler.
