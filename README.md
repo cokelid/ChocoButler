@@ -37,13 +37,13 @@ By default ChocoButler checks for outdated packages every 12 hours. To change th
 ### auto_install
 By default, ChocoButler will alert you to available updates, and you then start the installation process (from the system tray icon) at a convenient time. This way you don't upgrade Zoom in the middle of a video meeting, say. However if you want the upgrade installation to occur automatically, and as soon as outdated packages are available, you can change the `auto_install` setting to `true`.
 
-Even with auto_install turned on, you'll still need to click a box to allow choco to make changes, and these requests could pop up at any time (and so could be annoying).
-To avoid this, you could run the whole Powershell script as Admin, then you won't get prompted. This is probably not a great idea from a security point of view, and has not been tested. Overall ChocoButler was not built for automatic updates.
+Even with auto_install turned on, you'll probably still need to click a box to allow choco to make changes, and these requests could pop up at any time (and so could be annoying).
+To avoid this, you could run the whole Powershell script as Admin, then you won't get prompted (but this is probably not a great idea from a security point of view). Overall ChocoButler was not built for fully automated updates, so this will seem a bit clunky.
 
 ### test_mode
-Generally the `test_mode` setting should be left as `false`. See [Testing & Development](#testing-development) below for more details.
+Generally the `test_mode` setting should be left as `false`. See [Testing & Development](#testing--development) below for more details.
 
-### Restart
+### Apply Changes
 You must restart ChocoButler for settings changes to take affect.
 
 
@@ -55,9 +55,9 @@ The test_mode leads to three changes in behaviour:
 
 1) The first check for outdated-packages occurs as soon as the script starts (not one minute after as is the normal beahviour)
 2) If no outdated packages are found, a dummy package ("DummyTest") is added to the outdated list
-3) No changes are made during update installation, it just does a dry-run (i.e. the `--noop` switch is passed to `choco upgrade`)
+3) No changes are made during the installation of upgrades, it just does a dry-run (i.e. the `--noop` switch is passed to `choco upgrade`)
 
-This allows you to quickly test the main check->upgrade workflow, without having to wait for actual outdated packages to occur.
+The above changes allow you to quickly test the main check->upgrade workflow, without having to wait for an actual outdated packages to appear.
 
 ## TODO
 
