@@ -3,7 +3,7 @@ ChocoButler is a small app that works with [Chocolatey](https://chocolatey.org/)
 
 Rather than running upgrades on a fixed schedule, ChocoButler alerts you when updates are available and allows to start the upgrades at a time convenient for you. If you just want regular, scheduled updates without user interaction there are better ways to achieve this (though you can do that too with ChocoButler if you really want to).
 
-ChocoButler sits in the system tray (i.e. notification area) of Windows. Its icon changes colour and an alert will pop-up when upgrades are available.
+ChocoButler sits in the system tray (i.e. notification area) of Windows. Its icon changes colour and an alert pops-up when upgrades are available.
 
 
 ## Installation
@@ -24,7 +24,7 @@ ChocoButler will first check for outdated packages 1 minute after you start Choc
 
 Normally the regular blue/brown Chocolatey icon is shown in the system tray. If packages are available for upgrade, the icon will turn red. When updated packages are found, a popup will display also.
 
-To install available updates, right-click on the system tray icon and select "Install updates". The will install **all** available packages updates, you cannot select a subset.
+To install available updates, right-click on the system tray icon and select "Install updates". This will install **all** available package updates without prompting for confirmations. This effectively runs `choco upgrade all --yes` under the covers.
 
 By right-clicking the ChocoButler icon you can see when the last update or check occurred. You can also start the Chocolatey GUI (if installed) via the icon, and exit ChocoButler too.
  
