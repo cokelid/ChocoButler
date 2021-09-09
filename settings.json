@@ -1,5 +1,5 @@
 ﻿{
     "check_delay_hours": 12,
-	"auto_install": false,
+    "auto_install": false,
     "test_mode": false
 }
