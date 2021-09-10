@@ -6,6 +6,7 @@
 
 if ((Get-Host).Version -lt '5.1') {
     # Do we need this? Not tested on any other PS version, and not clear if the dialog box would work in older PS?
+    Write-Host "Choco Butler requires Powershell 5.1 or above."
     [System.Windows.Forms.MessageBox]::Show("Choco Butler requires Powershell 5.1 or above.`nChoco Butler will now exit.", "Powershell Version Error", 'OK', 'Error')
     Exit 1
 }
