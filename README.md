@@ -7,20 +7,24 @@ Rather than running upgrades on a fixed schedule, ChocoButler alerts you when up
 
 
 ## Installation
-In short: [download](https://github.com/cokelid/ChocoButler/archive/refs/heads/main.zip) the files, unzip to a folder, run the .bat file. Alternatively clone the [github repo](https://github.com/cokelid/ChocoButler.git) and run the .bat file.
+In short: [download](https://github.com/cokelid/ChocoButler/archive/refs/heads/main.zip) the files, unzip to a folder, double-click the `choco_butler.bat` file.
 
-You don't need to install ChocoButler - it's literally five files (a Powershell script, a settings file, two icon files, and a .bat file to start it). Okay, six files including this README.
+Alternatively clone the [github repo](https://github.com/cokelid/ChocoButler.git) and run the `choco_butler.bat` file.
 
-To test it out, double click the `choco_butler.bat` file (or run the `choco_butler.ps1` file in Powershell, from where you can see logging messages).
+To be clear, you don't need to install ChocoButler as such, just place the files in a folder, and double-click the `choco_butler.bat` file. If you don't like it, exit ChocoButler from the menu, and then delete the folder. ChocoButler makes no changes to your system (unless you use it to install updates of course).
 
-To set it up to run every time you start Windows, copy a shortcut of the .bat file to your startup folder as follows:
+You will need a recent version of Chocolately.
+
+If you want to see ChocoButler's logging messages, either run within Powershell (by running `choco_butler.ps1`), or run the `choco_butler_visible.bat` file instead. This .abt file runs ChocoButler with a visible console window, rather than hiding the window.
+### Start with Windows
+To set up ChocoButler to run every time you start Windows, copy a shortcut of the `choco_butler.bat` file to your startup folder as follows:
 
 1) Open start-up folder: Press `Win+R` (to open run dialog), and type `shell:startup`
 2) Right-click on the `choco_butler.bat` file and copy, then "Paste shortcut" in the startup folder
 
 
 ## Usage
-ChocoButler will first check for outdated packages 1 minute after you start ChocoButler (and every N hours thereafter). This delay prevents your PC getting hammered at startup. If you're keen, right-click on the Chocolatey icon in the system tray and click "Check for outdated packages now".
+ChocoButler will first check for outdated packages 1 minute after you start ChocoButler (and every N hours thereafter). This delay prevents your PC getting hammered at startup. If you're keen to check sooner, right-click on the Chocolatey icon in the system tray and click "Check for outdated packages now".
 
 Normally the regular blue/brown Chocolatey icon is shown in the system tray. If packages are available for upgrade, the icon will turn red. When updated packages are found, a popup will display also.
 
@@ -30,7 +34,7 @@ By right-clicking the ChocoButler icon you can see when the last update or check
  
 
 ## Configuration & Settings
-Settings exist in the `settings.json` text file. Edit this file to configure ChocoButler.
+Settings exist in the `settings.json` text file. Edit this file to configure ChocoButler. The following settings are available:
 
 ### `check_delay_hours`
 By default ChocoButler checks for outdated packages every 12 hours. To change this, edit the `settings.json` file and change the `check_delay_hours` value.
@@ -52,20 +56,20 @@ You must restart ChocoButler for settings changes to take affect.
 
 There is a built in _test mode_ to help when testing and developing the app. You can enable the _test mode_ by setting `"test_mode": true` in the `settings.json` file.
 
-The test_mode leads to three changes in behaviour:
+The test_mode leads to four changes in behaviour:
 
 1) The first check for outdated-packages occurs as soon as the script starts (not one minute after as is the normal behaviour)
 2) If no outdated packages are found, a dummy package ("DummyTest") is added to the outdated list
 3) No changes are made during the installation of upgrades, it just does a dry-run (i.e. the `--noop` switch is passed to `choco upgrade`)
+4) On exit, `Exit` is called rather than `Stop-Process`. This is less likely to kill your IDE! YMMV.
 
 The above changes allow you to quickly test the main check->upgrade workflow, without having to wait for an actual outdated packages to appear.
 
 ## TODO
-
 1) Ideally if you click on the "Updates Available" pop-up message you'd be able to start the install, but I can't get the `BalloonTipClicked` object event to work reliably. See comments in code.
 1) Make some better icons
 1) Read settings changes on the fly
-1) Edit settings from the app (even just open settings.json in notepad)
-1) Add a setting to prevent the update-window from closing when complete
+1) Edit settings from the app 
+1) Add option/setting to prevent the update-window from closing when complete
 1) Create a chocolatey install package for ChocoButler, so it can be installed via chocolatey
 
