@@ -224,8 +224,6 @@ function do_upgrade {
 
 function do_upgrade_dialog {
     # Present a dialog asking if upgrade should proceed
-    # This is called if the Balloon Tip is called
-
     if ($outdated.Count -gt 0) {
         $timer.Stop()
         $msg = "Proceed with package upgrades?`n$($outdated.Count) packages are available to upgrade:`n$($outdated.name -join ', ')"
