@@ -6,8 +6,8 @@
 
 if ((Get-Host).Version -lt '5.1') {
     # Do we need this? Not tested on any other PS version, and not clear if the dialog box would work in older PS?
-    Write-Host "Choco Butler requires Powershell 5.1 or above."
-    [System.Windows.Forms.MessageBox]::Show("Choco Butler requires Powershell 5.1 or above.`nChoco Butler will now exit.", "Powershell Version Error", 'OK', 'Error')
+    Write-Host "ChocoButler requires Powershell 5.1 or above."
+    [System.Windows.Forms.MessageBox]::Show("ChocoButler requires Powershell 5.1 or above.`nChocoButler will now exit.", "Powershell Version Error", 'OK', 'Error')
     Exit 1
 }
 
@@ -34,7 +34,7 @@ function load_settings {
     $settingsPath = $PSScriptRoot+"\settings.json"
     $settings = Get-Content -Raw -Path $settingsPath | ConvertFrom-Json  # Will not fail if file missing
     $ok = ($settings -is [System.Object]) -AND (Get-Member -inputobject $settings -name "check_delay_hours")
-    assert $ok "Cannot load settings.json file:`n$($settingsPath)`nChoco Butler will now exit." "Choco Butler Settings Error"
+    assert $ok "Cannot load settings.json file:`n$($settingsPath)`nChocoButler will now exit." "ChocoButler Settings Error"
     Write-Host "[$((Get-Date).toString())] SETTINGS: $settings"
     return $settings
 }
@@ -44,7 +44,7 @@ $settings = load_settings
 
 # Check that choco is installed and it's recent
 $choco = Get-Command choco
-assert ($choco.Count -gt 0) "Cannot find a choco installation.`nEnsure 'choco.exe' is on your path.`nChoco Bultler will now exit." "Chocolately Not Installed"
+assert ($choco.Count -gt 0) "Cannot find a choco installation.`nEnsure 'choco.exe' is on your path.`nChocoButler will now exit." "Chocolately Not Installed"
 # Check Chocolately version. There must be a better way than parsing the whole string?
 assert ((choco -? | Out-String) -match '(?m)^Chocolatey v([\d\.]+)') "Requires Chocolatey Version 0.11.1 or higher. Cannot determine your version.`nChocoButler will now exit" "Chocolately Version Error"  # (?m) modifies regex for multiline match
 $choco_ver = $Matches[1]  # The pevious -match will populate $Matches if True
@@ -58,7 +58,7 @@ function check_choco {
     # If it's goes wrong you'll see something like:
     #         "Access to the path 'C:\ProgramData\chocolatey\choco.exe.old' is denied."
     $res = (choco help | Select-String 'choco.exe.old'' is denied')
-    assert (-Not ($res.Count -gt 0)) "Chocolately is no longer working properly (it probably updated itself).`nDelete 'choco.exe.old' file.`nReboot is likely required :-(`nChoco Bultler will now exit.`n`n`n$res" "Chocolately Error"
+    assert (-Not ($res.Count -gt 0)) "Chocolately is no longer working properly (it probably updated itself).`nDelete 'choco.exe.old' file.`nReboot is likely required :-(`nChocoButler will now exit.`n`n`n$res" "Chocolately Error"
 }
 check_choco
 
@@ -143,11 +143,11 @@ function do_upgrade {
     $old_mnuInstall_Enabled = $mnuInstall.Enabled
     $mnuInstall.Enabled = $false
     $mnuCheck.Enabled = $false
-    $objNotifyIcon.Text = "Choco Butler`nUpgrading Packages..."
+    $objNotifyIcon.Text = "ChocoButler`nUpgrading Packages..."
     $mnuMsg.Text = "Upgrading all packages..."
     #$objNotifyIcon.BalloonTipIcon = "Info" # Should be one of: None, Info, Warning, Error  
     #$objNotifyIcon.BalloonTipText = "Chocolately UPGRADE of all packages has STARTED"
-    #$objNotifyIcon.BalloonTipTitle = "Choco Butler" 
+    #$objNotifyIcon.BalloonTipTitle = "ChocoButler" 
     #$objNotifyIcon.ShowBalloonTip(3000)
     $upgradeStart = Get-Date
     $mnuDate.Text = "Upgrading began: $($upgradeStart.toString())"
@@ -176,12 +176,12 @@ function do_upgrade {
     $upgradeEnd = Get-Date
     Write-Host "[$($upgradeEnd.toString())] Upgrade ended with Exit Code: $exitCode"
     $mnuDate.Text = "Upgrade ended: $($upgradeEnd.toString())"
-    $objNotifyIcon.Text = "Choco Butler"
+    $objNotifyIcon.Text = "ChocoButler"
     if ($exitCode -eq 0) {  
         $mnuMsg.Text = "Upgrade successful!"
         $objNotifyIcon.BalloonTipIcon = "Info" # Should be one of: None, Info, Warning, Error  
         $objNotifyIcon.BalloonTipText = "Chocolately UPGRADE SUCCESS!"
-        $objNotifyIcon.BalloonTipTitle = "Choco Butler"
+        $objNotifyIcon.BalloonTipTitle = "ChocoButler"
         $objNotifyIcon.ShowBalloonTip(4000)
         $mnuInstall.Enabled = $false  # Worked, so don't want to rerun.
         $objNotifyIcon.Icon = $icon  # regular icon
@@ -213,7 +213,7 @@ function do_upgrade {
         $mnuMsg.Text = $msg
         $objNotifyIcon.BalloonTipIcon = $type # Should be one of: None, Info, Warning, Error  
         $objNotifyIcon.BalloonTipText = $msg
-        $objNotifyIcon.BalloonTipTitle = "Chocolately Upgrade (Choco Butler)" 
+        $objNotifyIcon.BalloonTipTitle = "Chocolately Upgrade (ChocoButler)" 
         $objNotifyIcon.ShowBalloonTip(30000)
         $mnuInstall.Enabled = $old_mnuInstall_Enabled # Restore the previous state if it didn't work
     }
@@ -229,7 +229,7 @@ function do_upgrade_dialog {
     if ($outdated.Count -gt 0) {
         $timer.Stop()
         $msg = "Proceed with package upgrades?`n$($outdated.Count) packages are available to upgrade:`n$($outdated.name -join ', ')"
-        $res = [System.Windows.Forms.MessageBox]::Show($msg,'Choco Butler','YesNo','Question')
+        $res = [System.Windows.Forms.MessageBox]::Show($msg,'ChocoButler','YesNo','Question')
         if ($res -eq 'Yes') {
             do_upgrade
             $next_check_time = (Get-Date) + (New-TimeSpan -Hours $settings.check_delay_hours)
@@ -247,7 +247,7 @@ function check_for_outdated {
     $timer.Stop()
     $mnuCheck.Enabled = $false
     $checkDate = Get-Date
-    $objNotifyIcon.Text = "Choco Butler`nChecking for outdated packages..."
+    $objNotifyIcon.Text = "ChocoButler`nChecking for outdated packages..."
     $mnuMsg.Text = "Checking for outdated packages..."
     $mnuDate.Text = "Checking started: $($checkDate.toString())"
     Write-Host "[$($checkDate.toString())] Outdated-check started"
@@ -280,11 +280,11 @@ function check_for_outdated {
         $objNotifyIcon.ShowBalloonTip(10000)
         Write-Host "[$((Get-Date).toString())] Outdated-check complete; 'choco outdated' exit code: $($LastExitCode)"
         Write-Host "[$((Get-Date).toString())] $($outdated.Count) outdated pacakages: $outdated_csv"
-        $objNotifyIcon.Text = "Choco Butler`n$($outdated.Count) outdated packages"    
+        $objNotifyIcon.Text = "ChocoButler`n$($outdated.Count) outdated packages"    
         if ($settings.auto_install) { do_upgrade }
 
     } else {
-        $objNotifyIcon.Text = "Choco Butler`nNo outdated packages"
+        $objNotifyIcon.Text = "ChocoButler`nNo outdated packages"
         Write-Host "[$((Get-Date).toString())] No outdated packages found"
         $mnuMsg.Text = "No outdated packages"
         $objNotifyIcon.Icon = $icon
@@ -302,7 +302,7 @@ $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($PSScriptRoot+ "\chocolatey
 $icon_red = [System.Drawing.Icon]::ExtractAssociatedIcon($PSScriptRoot+ "\chocolatey_red.ico")
 
 $objNotifyIcon.Icon = $icon
-$objNotifyIcon.Text = "Choco Butler"
+$objNotifyIcon.Text = "ChocoButler"
 $objNotifyIcon.Visible = $true
 
 # Can't get the BalloonTipClicked event to work consistently.
