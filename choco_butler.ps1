@@ -104,11 +104,11 @@ $mnuCheck.add_Click({
 })
 
 $mnuMsg = New-Object System.Windows.Forms.MenuItem
-$mnuMsg.Text = "Updates available: ???"
+$mnuMsg.Text = "Updates available: <Not Checked>"
 $mnuMsg.Enabled = $false
 
 $mnuDate = New-Object System.Windows.Forms.MenuItem
-$mnuDate.Text = "Last checked: ???"
+$mnuDate.Text = "Last checked: <Not Checked>"
 $mnuDate.Enabled = $false
 
 $mnuExit = New-Object System.Windows.Forms.MenuItem
