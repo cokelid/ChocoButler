@@ -6,16 +6,16 @@ ChocoButler sits in the system tray (i.e. notification area) of Windows. Its ico
 Rather than running upgrades on a fixed schedule, ChocoButler alerts you when updates are available and allows you to start the upgrades at a time convenient for you. (If you just want regular, scheduled updates without user interaction there are better ways to achieve this, though you can do that too with ChocoButler if you really want to).
 
 
-## Installation
+## Installation & Running
 In short: [download](https://github.com/cokelid/ChocoButler/archive/refs/heads/main.zip) the files, unzip to a folder, double-click the `choco_butler.bat` file.
 
 Alternatively clone the [github repo](https://github.com/cokelid/ChocoButler.git) and run the `choco_butler.bat` file.
 
 To be clear, you don't need to install ChocoButler as such, just place the files in a folder, and double-click the `choco_butler.bat` file. If you don't like it, exit ChocoButler from the menu, and then delete the folder. ChocoButler makes no changes to your system (unless you use it to install updates of course).
 
-You will need a recent version of Chocolately.
+You will need a recent version of Chocolatey.
 
-If you want to see ChocoButler's logging messages, either run within Powershell (by running `choco_butler.ps1`), or run the `choco_butler_visible.bat` file instead. This .abt file runs ChocoButler with a visible console window, rather than hiding the window.
+If you want to see ChocoButler's logging messages, either run within Powershell (by running `choco_butler.ps1`), or run the `choco_butler_visible.bat` file instead. This .bat file runs ChocoButler with a visible console window, rather than hiding the window.
 ### Start with Windows
 To set up ChocoButler to run every time you start Windows, copy a shortcut of the `choco_butler.bat` file to your startup folder as follows:
 
