@@ -4,56 +4,95 @@
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
 
-Get-Variable
-
 if ((Get-Host).Version -lt '5.1') {
     # Do we need this? Not tested on any other PS version, and not clear if the dialog box would work in older PS?
     [System.Windows.Forms.MessageBox]::Show("Choco Butler requires Powershell 5.1 or above.`nChoco Butler will now exit.", "Powershell Version Error", 'OK', 'Error')
-    Stop-Process $pid
+    Exit 1
 }
 
+# INIT outer vars (Script scope) used in functions.
+$objNotifyIcon = New-Object System.Windows.Forms.NotifyIcon
+$next_check_time = Get-Date
+$timer = New-Object System.Windows.Forms.Timer
+$outdated = @()
+$settings = @{check_delay_hours=12; auto_install=$False; test_mode=$False}
+
+function assert($condition, $message, $title) {
+    if (-Not $condition) {
+        $timer.Stop()
+        Write-Host $message
+        Write-Host '(Click OK in dialog box to Exit)'
+        [System.Windows.Forms.MessageBox]::Show($message, $title, 'OK', 'Error')
+        $objNotifyIcon.Dispose()
+        $timer.Dispose()
+        if ($settings.test_mode) { Exit 1 } else { Stop-Process $pid }
+    }
+}
 
 function load_settings {
     $settingsPath = $PSScriptRoot+"\settings.json"
     $settings = Get-Content -Raw -Path $settingsPath | ConvertFrom-Json  # Will not fail if file missing
     $ok = ($settings -is [System.Object]) -AND (Get-Member -inputobject $settings -name "check_delay_hours")
-    if (-Not $ok) {
-        [System.Windows.Forms.MessageBox]::Show("Cannot load settings.json file:`n$($settingsPath)`nChoco Butler will now exit.", "Choco Butler Settings Error", 'OK', 'Error')
-        $objNotifyIcon.Dispose()
-        Stop-Process $pid    
-    }
+    assert $ok "Cannot load settings.json file:`n$($settingsPath)`nChoco Butler will now exit." "Choco Butler Settings Error"
     Write-Host "[$((Get-Date).toString())] SETTINGS: $settings"
     return $settings
 }
-
-# INIT outer vars (Script scope) used in functions.
 $settings = load_settings
-$next_check_time = Get-Date
-$objNotifyIcon = New-Object System.Windows.Forms.NotifyIcon
-$timer = New-Object System.Windows.Forms.Timer
-$outdated = @()
 
 
-# Check that choco is installed
+
+# Check that choco is installed and it's recent
 $choco = Get-Command choco
-if ($choco.Count -eq 0) {
-    [System.Windows.Forms.MessageBox]::Show("Cannot find a choco installation.`nEnsure 'choco.exe' is on your path.`nChoco Bultler will now exit.", "Chocolately Not Installed", 'OK', 'Error')
-    $objNotifyIcon.Dispose()
-    Stop-Process $pid
+assert ($choco.Count -gt 0) "Cannot find a choco installation.`nEnsure 'choco.exe' is on your path.`nChoco Bultler will now exit." "Chocolately Not Installed"
+# Check Chocolately version. There must be a better way than parsing the whole string?
+assert ((choco -? | Out-String) -match '(?m)^Chocolatey v([\d\.]+)') "Requires Chocolatey Version 0.11.1 or higher. Cannot determine your version.`nChocoButler will now exit" "Chocolately Version Error"  # (?m) modifies regex for multiline match
+$choco_ver = $Matches[1]  # The pevious -match will populate $Matches if True
+assert ([System.Version]::Parse($choco_ver) -ge '0.11.1') "Requires Chocolatey Version 0.11.1 or higher.`nYou have $($Matches[0]).`nChocoButler will now exit." "Chocolately Version Error"
+      
+
+
+# Check we're not getting errors that will prevent parsing the choco command output
+function check_choco {
+    # If chocolately updates itself it can get confused. Check for this by running trivial 'choco help' command.
+    # If it's goes wrong you'll see something like:
+    #         "Access to the path 'C:\ProgramData\chocolatey\choco.exe.old' is denied."
+    $res = (choco help | Select-String 'choco.exe.old'' is denied')
+    assert (-Not ($res.Count -gt 0)) "Chocolately is no longer working properly (it probably updated itself).`nDelete 'choco.exe.old' file.`nReboot is likely required :-(`nChoco Bultler will now exit.`n`n`n$res" "Chocolately Error"
+}
+check_choco
+
+
+
+$gui_obj = Get-Command chocolateygui  # Returns an object
+if ( $gui_obj.Count -gt 0 ) {
+    $gui = $gui_obj.Source  # This is the path
+} else {
+    $gui = "C:\Program Files (x86)\Chocolatey GUI\ChocolateyGui.exe"
+    if (-Not (Test-Path $gui)) {
+        $gui = "C:\Program Files\Chocolatey GUI\ChocolateyGui.exe"
+        if (-Not (Test-Path $gui)) {
+            $lnk = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Chocolatey GUI.lnk"
+            $sh = New-Object -ComObject WScript.Shell
+            $gui = $sh.CreateShortcut($lnk).TargetPath
+            if (-Not (Test-Path $gui)) {
+                $gui = ""
+            }
+        }
+    }
 }
 
-
-# Create the menus for systray icon
-$mnuOpen = New-Object System.Windows.Forms.MenuItem
-if ( (Get-Command chocolateygui).Count -eq 0 ) {
-    $mnuOpen.Text = "Chocolately GUI not installed"
-    $mnuOpen.Enabled = $false
-} Else {
+# Create the menu entry for opening Chocolatey GUI
+$mnuOpen = New-Object System.Windows.Forms.MenuItem 
+if ( Test-Path $gui ) {
     $mnuOpen.Text = "Open Chocolately GUI"
     $mnuOpen.add_Click({
-        chocolateygui
+        Start-Process -FilePath $gui
     })
+} Else {
+    $mnuOpen.Text = "(Chocolately GUI not installed)"
+    $mnuOpen.Enabled = $false
 }
+
 
 $mnuCheck = New-Object System.Windows.Forms.MenuItem
 $mnuCheck.Text = "Check for outdated packages now"
@@ -76,7 +115,8 @@ $mnuExit = New-Object System.Windows.Forms.MenuItem
 $mnuExit.Text = "Exit"
 $mnuExit.add_Click({
     $objNotifyIcon.Dispose()
-    Stop-Process $pid
+    $timer.Dispose()
+    if ($settings.test_mode) { Exit 1 } else { Stop-Process $pid }
 })
 
 $mnuInstall = New-Object System.Windows.Forms.MenuItem
@@ -96,17 +136,6 @@ $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuOpen)
 $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuExit)
 
 
-function check_choco {
-    # If chocolately updates itself it can get confused. Check for this by running trivial 'choco help' command.
-    # If it's goes wrong you'll see something like:
-    #         "Access to the path 'C:\ProgramData\chocolatey\choco.exe.old' is denied."
-    $res = (choco help | Select-String 'choco.exe.old'' is denied')
-    if ($res.Count -gt 0) {
-        [System.Windows.Forms.MessageBox]::Show("Chocolately is no longer working properly (it probably updated itself).`nReboot is likely required :-(`nOr delete 'choco.exe.old' file.`nChoco Bultler will now exit.", "Chocolately Error", 'OK', 'Error')
-        $objNotifyIcon.Dispose()
-        Stop-Process $pid    
-    }
-}
 
 function do_upgrade {
     $timer.Stop()
@@ -199,7 +228,7 @@ function do_upgrade_dialog {
     if ($outdated.Count -gt 0) {
         $timer.Stop()
         $msg = "Proceed with package upgrades?`n$($outdated.Count) packages are available to upgrade:`n$($outdated.name -join ', ')"
-        $res = [System.Windows.MessageBox]::Show($msg,'Choco Butler','YesNo','Question')
+        $res = [System.Windows.Forms.MessageBox]::Show($msg,'Choco Butler','YesNo','Question')
         if ($res -eq 'Yes') {
             do_upgrade
             $next_check_time = (Get-Date) + (New-TimeSpan -Hours $settings.check_delay_hours)
@@ -217,7 +246,7 @@ function check_for_outdated {
     $timer.Stop()
     $mnuCheck.Enabled = $false
     $checkDate = Get-Date
-    $objNotifyIcon.Text = "Choco Butler`nChecking for Outdated Packages..."
+    $objNotifyIcon.Text = "Choco Butler`nChecking for outdated packages..."
     $mnuMsg.Text = "Checking for outdated packages..."
     $mnuDate.Text = "Checking started: $($checkDate.toString())"
     Write-Host "[$($checkDate.toString())] Outdated-check started"
@@ -225,7 +254,7 @@ function check_for_outdated {
     $outdated = choco outdated -r | ConvertFrom-Csv -Delimiter '|' -Header 'name','current','available','pinned'
     if ($settings.test_mode) {
         if (-Not ($outdated.Count -gt 0)) {
-            Write-Host "[$((Get-Date).toString())] TEST MODE! Adding dummy outdated package: 'DummyTestPackageChocoButler'"
+            Write-Host "[$((Get-Date).toString())] TEST MODE! Adding dummy outdated package: 'DummyTest'"
             # We're in TEST MODE so, and there are no updates, so add a fake dummy package (an @array containing one object)
             $outdated = @([PSCustomObject]@{
                 name     = 'DummyTest'
