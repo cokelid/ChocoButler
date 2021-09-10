@@ -16,7 +16,7 @@ $objNotifyIcon = New-Object System.Windows.Forms.NotifyIcon
 $next_check_time = Get-Date
 $timer = New-Object System.Windows.Forms.Timer
 $outdated = @()
-$settings = @{check_delay_hours=12; auto_install=$False; test_mode=$False}
+$settings = [PSCustomObject]@{check_delay_hours=12; auto_install=$False; test_mode=$False}
 
 function assert($condition, $message, $title) {
     if (-Not $condition) {
@@ -32,11 +32,19 @@ function assert($condition, $message, $title) {
 
 function load_settings {
     $settingsPath = $PSScriptRoot+"\settings.json"
-    $settings = Get-Content -Raw -Path $settingsPath | ConvertFrom-Json  # Will not fail if file missing
-    $ok = ($settings -is [System.Object]) -AND (Get-Member -inputobject $settings -name "check_delay_hours")
-    assert $ok "Cannot load settings.json file:`n$($settingsPath)`nChocoButler will now exit." "ChocoButler Settings Error"
-    Write-Host "[$((Get-Date).toString())] SETTINGS: $settings"
-    return $settings
+    assert (Test-Path $settingsPath) "Cannot find settings.json file:`n$($settingsPath)`nChocoButler will now exit." "ChocoButler Settings Error"
+    $s = Get-Content -Raw -Path $settingsPath | ConvertFrom-Json  # Will not fail if file missing
+    $ok = ($s -is [System.Object])
+    assert $ok "Cannot load settings.json file. Syntax Error?:`n$($settingsPath)`nChocoButler will now exit." "ChocoButler Settings Error"
+    # Ensure $s has same settings (Properties) as existing $settings
+    Foreach ($k in $settings.PSObject.Properties.Name) {
+        assert (Get-Member -InputObject $s -Name $k) "Could not find '$k' in settings.json file" "ChocoButler Settings Error"
+    }
+    Foreach ($k in $s.PSObject.Properties.Name) {
+        assert (Get-Member -InputObject $settings -Name $k) "Unexpected setting '$k' in settings.json file" "ChocoButler Settings Error"
+    }
+    Write-Host "[$((Get-Date).toString())] Settings: $s"
+    return $s
 }
 $settings = load_settings
 
