@@ -106,10 +106,16 @@ if ( Test-Path $gui ) {
 $mnuCheck = New-Object System.Windows.Forms.MenuItem
 $mnuCheck.Text = "Check for outdated packages now"
 $mnuCheck.add_Click({
-    check_for_outdated
-    $next_check_time = (Get-Date) + (New-TimeSpan -Hours $settings.check_delay_hours)
-    Write-Host "[$((Get-Date).toString())] Next outdated-check will be in $($settings.check_delay_hours) hours at approx: $($next_check_time.toString())"
-    Set-Variable -Name "next_check_time" -Value $next_check_time -Scope Script  # Set the next time in the outer scope
+    $ok = check_for_outdated
+    if ($ok) {
+        # If the check failed, don't update time so it happens again in a minute
+        $next_check_time = $end_time + (New-TimeSpan -Hours $settings.check_delay_hours)
+        Write-Host "[$($end_time.toString())] Next outdated-check will be in $($settings.check_delay_hours) hours at approx: $($next_check_time.toString())"
+        Set-Variable -Name "next_check_time" -Value $next_check_time -Scope Script  # Store the new next_time in the outer scope
+    } Else {
+        Write-Host "[$((Get-Date).toString())] Following error, next outdated-check will be in 1 minute"
+    }
+    
 })
 
 $mnuMsg = New-Object System.Windows.Forms.MenuItem
@@ -259,8 +265,7 @@ function check_for_outdated {
     Write-Host "[$($checkDate.toString())] Outdated-check started"
     check_choco
     $outdated_raw = choco outdated -r    
-    $exitCode = $LastExitCode # Exit codes: https://docs.chocolatey.org/en-us/choco/commands/outdated#exit-codes
-    # Check for error
+    # $exitCode = $LastExitCode # Exit codes: https://docs.chocolatey.org/en-us/choco/commands/outdated#exit-codes
     [array]$outdated = ConvertFrom-Csv -InputObject $outdated_raw -Delimiter '|' -Header 'name','current','available','pinned'
     if ($settings.test_mode) {
         if (-Not ($outdated.Count -gt 0)) {
@@ -274,34 +279,46 @@ function check_for_outdated {
             })
         }
     }
-    $outdated_csv = $outdated.name -join ', '  # For display in bubble    
+    $outdated_csv = $outdated.name -join ', '  # For display in bubble
     $mnuMsg.Text = "$($outdated.Count) outdated packages"
     $mnuDate.Text = "Last outdated check: $($checkDate.toString())"
     Set-Variable -Name "outdated" -Value $outdated -Scope Script  # Store the $outdated in the outer scope so it can be used by do_upgrade_dialog
-
-    if ($outdated.Count -gt 0) {
-        $objNotifyIcon.Icon = $icon_red
-        $mnuInstall.Enabled = $true
-        $objNotifyIcon.BalloonTipIcon = "Info" # Should be one of: None, Info, Warning, Error  
-        $objNotifyIcon.BalloonTipText = "$($outdated.Count) outdated pacakages`nOutdated: $outdated_csv"
-        $objNotifyIcon.BalloonTipTitle = "Chocolately Outdated Packages"
-        # register-objectevent $objNotifyIcon BalloonTipClicked BalloonClicked_event -Action { do_upgrade_dialog }        
-        $objNotifyIcon.ShowBalloonTip(10000)
-        Write-Host "[$((Get-Date).toString())] Outdated-check complete; 'choco outdated' exit code: $($LastExitCode)"
-        Write-Host "[$((Get-Date).toString())] $($outdated.Count) outdated pacakages: $outdated_csv"
-        $objNotifyIcon.Text = "ChocoButler`n$($outdated.Count) outdated packages"    
-        if ($settings.auto_install) { do_upgrade }
-
-    } else {
-        $objNotifyIcon.Text = "ChocoButler`nNo outdated packages"
-        Write-Host "[$((Get-Date).toString())] No outdated packages found"
-        $mnuMsg.Text = "No outdated packages"
+    If ($outdated_csv -match 'Error retrieving') {
+        Write-Host "[$((Get-Date).toString())] Error retrieving data"
+        Write-Host $outdated_csv
+        $objNotifyIcon.Text = "ChocoButler`nError retrieving data"
+        $mnuMsg.Text = "Error retrieving data"
+        $mnuDate.Text = "Error occurred: $($checkDate.toString())"
         $objNotifyIcon.Icon = $icon
         $mnuInstall.Enabled = $false
+        $ok = $false
+    } Else {
+        if ($outdated.Count -gt 0) {
+            $objNotifyIcon.Icon = $icon_red
+            $mnuInstall.Enabled = $true
+            $objNotifyIcon.BalloonTipIcon = "Info" # Should be one of: None, Info, Warning, Error  
+            $objNotifyIcon.BalloonTipText = "$($outdated.Count) outdated pacakages`nOutdated: $outdated_csv"
+            $objNotifyIcon.BalloonTipTitle = "Chocolately Outdated Packages"
+            # register-objectevent $objNotifyIcon BalloonTipClicked BalloonClicked_event -Action { do_upgrade_dialog }        
+            $objNotifyIcon.ShowBalloonTip(10000)
+            Write-Host "[$((Get-Date).toString())] Outdated-check complete; 'choco outdated' exit code: $($LastExitCode)"
+            Write-Host "[$((Get-Date).toString())] $($outdated.Count) outdated pacakages: $outdated_csv"
+            $objNotifyIcon.Text = "ChocoButler`n$($outdated.Count) outdated packages"    
+            if ($settings.auto_install) { do_upgrade }
+
+        } else {
+            $objNotifyIcon.Text = "ChocoButler`nNo outdated packages"
+            Write-Host "[$((Get-Date).toString())] No outdated packages found"
+            $mnuMsg.Text = "No outdated packages"
+            $objNotifyIcon.Icon = $icon
+            $mnuInstall.Enabled = $false
+        }
+        $ok = $true
     }
     
     $timer.Start()
     $mnuCheck.Enabled = $true
+    return $ok
 
 }
 
@@ -326,11 +343,16 @@ $timer.Add_Tick({
     $now = Get-Date
     if ($now -gt $next_check_time) {
         Write-Host "[$($now.toString())] Time for new outdated-check (as of $($next_check_time.toString()))."        
-        check_for_outdated
+        $ok = check_for_outdated
         $end_time = Get-Date
-        $next_check_time = $end_time + (New-TimeSpan -Hours $settings.check_delay_hours)       
-        Write-Host "[$($end_time.toString())] Next outdated-check will be in $($settings.check_delay_hours) hours at approx: $($next_check_time.toString())"
-        Set-Variable -Name "next_check_time" -Value $next_check_time -Scope Script  # Store the new next_time in the outer scope
+        if ($ok) {
+            # If the check failed, don't update time so it happens again in a minute
+            $next_check_time = $end_time + (New-TimeSpan -Hours $settings.check_delay_hours)
+            Write-Host "[$($end_time.toString())] Next outdated-check will be in $($settings.check_delay_hours) hours at approx: $($next_check_time.toString())"
+            Set-Variable -Name "next_check_time" -Value $next_check_time -Scope Script  # Store the new next_time in the outer scope
+        } Else {
+            Write-Host "[$((Get-Date).toString())] Following error, next outdated-check will be in 1 minute"
+        }
     }
 })
 if ($settings.test_mode) {
