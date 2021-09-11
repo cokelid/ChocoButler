@@ -15,7 +15,7 @@ if ((Get-Host).Version -lt '5.1') {
 $objNotifyIcon = New-Object System.Windows.Forms.NotifyIcon
 $next_check_time = Get-Date
 $timer = New-Object System.Windows.Forms.Timer
-$outdated = @()
+[array]$outdated = @()
 $settings = [PSCustomObject]@{check_delay_hours=12; auto_install=$False; test_mode=$False}
 
 function assert($condition, $message, $title) {
@@ -258,7 +258,10 @@ function check_for_outdated {
     $mnuDate.Text = "Checking started: $($checkDate.toString())"
     Write-Host "[$($checkDate.toString())] Outdated-check started"
     check_choco
-    $outdated = choco outdated -r | ConvertFrom-Csv -Delimiter '|' -Header 'name','current','available','pinned'
+    $outdated_raw = choco outdated -r    
+    $exitCode = $LastExitCode # Exit codes: https://docs.chocolatey.org/en-us/choco/commands/outdated#exit-codes
+    # Check for error
+    [array]$outdated = ConvertFrom-Csv -InputObject $outdated_raw -Delimiter '|' -Header 'name','current','available','pinned'
     if ($settings.test_mode) {
         if (-Not ($outdated.Count -gt 0)) {
             Write-Host "[$((Get-Date).toString())] TEST MODE! Adding dummy outdated package: 'DummyTest'"
