@@ -178,20 +178,22 @@ function do_upgrade {
     $mnuInstall.Enabled = $false
     $mnuCheck.Enabled = $false
     $objNotifyIcon.Text = "ChocoButler`nUpgrading Packages..."
-    $mnuMsg.Text = "Upgrading all packages..."
+    $mnuMsg.Text = "Upgrading $($outdated.Count) packages..."
     #$objNotifyIcon.BalloonTipIcon = "Info" # Should be one of: None, Info, Warning, Error  
     #$objNotifyIcon.BalloonTipText = "Chocolately UPGRADE of all packages has STARTED"
     #$objNotifyIcon.BalloonTipTitle = "ChocoButler" 
     #$objNotifyIcon.ShowBalloonTip(3000)
+
+    $outdated_packages = $outdated -join ' '  # Space-separated list of packages
     $upgradeStart = Get-Date
     $mnuDate.Text = "Upgrading began: $($upgradeStart.toString())"
-    Write-Host "[$($upgradeStart.toString())] Upgrading began"
-    # Run the choco command as admin. The following is the same as "choco upgrade all --yes"
+    Write-Host "[$($upgradeStart.toString())] Upgrading packages: $outdated_packages"
+    # Run the choco command as admin.
     If ($settings.test_mode) {
         Write-Host "[$($upgradeStart.toString())] TEST MODE! Nothing will be updated. Running with --noop."
-        $arg_list = "upgrade all --yes --noop"
+        $arg_list = "upgrade $outdated_packages --yes --noop"
     } Else {
-        $arg_list = "upgrade all --yes"
+        $arg_list = "upgrade $outdated_packages --yes"
     }
     try {
         $proc = (Start-Process -FilePath "choco" -Verb RunAs -ArgumentList $arg_list -Wait -PassThru)
