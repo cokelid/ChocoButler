@@ -284,7 +284,7 @@ function check_for_outdated {
     $mnuDate.Text = "Checking started: $($checkDate.toString())"
     Write-Host "[$($checkDate.toString())] Outdated-check started"
     check_choco
-    $outdated_raw = choco outdated -r    
+    $outdated_raw = choco outdated -r --ignore-pinned  
     # Exit codes: https://docs.chocolatey.org/en-us/choco/commands/outdated#exit-codes
     if ($null -eq $outdated_raw) {
         $outdated = @()
@@ -298,7 +298,7 @@ function check_for_outdated {
             $outdated = @([PSCustomObject]@{
                 name     = 'DummyTest'
                 current  = '1.0'
-                avaiable = '1.1'
+                available = '1.1'
                 pinned = $false
             })
         }
