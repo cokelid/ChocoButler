@@ -113,6 +113,13 @@ $mnuCheck.add_Click({
         $next_check_time = $end_time + (New-TimeSpan -Hours $settings.check_delay_hours)
         Write-Host "[$($end_time.toString())] Next outdated-check will be in $($settings.check_delay_hours) hours at approx: $($next_check_time.toString())"
         Set-Variable -Name "next_check_time" -Value $next_check_time -Scope Script  # Store the new next_time in the outer scope
+        if ($outdated.Count -eq 0) {
+            # For manually instigated checks, show a zero result
+            $objNotifyIcon.BalloonTipIcon = "Info" # Should be one of: None, Info, Warning, Error  
+            $objNotifyIcon.BalloonTipText = "No outdated chocolatey pacakages found"
+            $objNotifyIcon.BalloonTipTitle = "No Outdated Packages"
+            $objNotifyIcon.ShowBalloonTip(5000)
+        }
     } Else {
         Write-Host "[$(($end_time).toString())] Following error, next outdated-check will be in 1 minute"
     }
