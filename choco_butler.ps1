@@ -65,7 +65,7 @@ function check_choco {
     # If chocolately updates itself it can get confused. Check for this by running trivial 'choco help' command.
     # If it's goes wrong you'll see something like:
     #         "Access to the path 'C:\ProgramData\chocolatey\choco.exe.old' is denied."
-    $res = (choco help | Select-String 'choco.exe.old'' is denied')
+    $res = (choco dummy | Select-String 'choco.exe.old'' is denied')  # I know "dummy" is not a command, but there's "noop" command in choco?!
     assert (-Not ($res.Count -gt 0)) "Chocolately is no longer working properly (it probably updated itself).`nDelete 'choco.exe.old' file.`nReboot is likely required :-(`nChocoButler will now exit.`n`n`n$res" "Chocolately Error"
 }
 check_choco
@@ -107,13 +107,14 @@ $mnuCheck = New-Object System.Windows.Forms.MenuItem
 $mnuCheck.Text = "Check for outdated packages now"
 $mnuCheck.add_Click({
     $ok = check_for_outdated
+    $end_time = Get-Date
     if ($ok) {
         # If the check failed, don't update time so it happens again in a minute
         $next_check_time = $end_time + (New-TimeSpan -Hours $settings.check_delay_hours)
         Write-Host "[$($end_time.toString())] Next outdated-check will be in $($settings.check_delay_hours) hours at approx: $($next_check_time.toString())"
         Set-Variable -Name "next_check_time" -Value $next_check_time -Scope Script  # Store the new next_time in the outer scope
     } Else {
-        Write-Host "[$((Get-Date).toString())] Following error, next outdated-check will be in 1 minute"
+        Write-Host "[$(($end_time).toString())] Following error, next outdated-check will be in 1 minute"
     }
     
 })
@@ -141,6 +142,23 @@ $mnuInstall.add_Click({
    do_upgrade_dialog   
 })
 
+$mnuAdvanced = New-Object System.Windows.Forms.MenuItem
+$mnuAdvanced.Text = "Advanced"
+$mnuAdvanced.Enabled = $true
+
+$mnuShowLog = New-Object System.Windows.Forms.MenuItem
+$log_file_path = 'C:\ProgramData\chocolatey\logs\chocolatey.log'  # Is there a way to discover this?
+if (Test-Path $log_file_path) {
+    $mnuShowLog.Text = "Show log file"
+    $mnuShowLog.Enabled = $true
+    $mnuShowLog.add_Click({
+        Invoke-Item $log_file_path   
+    })
+} Else {
+    $mnuShowLog.Text = "(Log file not found?)"
+    $mnuShowLog.Enabled = $false
+}
+
 $context_menu = New-Object System.Windows.Forms.ContextMenu
 $objNotifyIcon.ContextMenu = $context_menu
 $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuInstall)
@@ -148,6 +166,8 @@ $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuMsg)
 $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuDate)
 $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuCheck)
 $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuOpen)
+$objNotifyIcon.contextMenu.MenuItems.AddRange($mnuAdvanced)
+$mnuAdvanced.MenuItems.AddRange($mnuShowLog)
 $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuExit)
 
 
@@ -174,8 +194,8 @@ function do_upgrade {
         $arg_list = "upgrade all --yes"
     }
     try {
-        Start-Process -FilePath "choco" -Verb RunAs -ArgumentList $arg_list -Wait          
-        $exitCode = $LastExitCode # Exit codes: https://docs.chocolatey.org/en-us/choco/commands/upgrade#exit-codes
+        $proc = (Start-Process -FilePath "choco" -Verb RunAs -ArgumentList $arg_list -Wait -PassThru)
+        $exitCode = $proc.ExitCode # Exit codes: https://docs.chocolatey.org/en-us/choco/commands/upgrade#exit-codes
     } catch [System.InvalidOperationException]{
         # If the user doesn't click yes to elevated rights
         $exitCode = -999
@@ -221,7 +241,7 @@ function do_upgrade {
             $msg = "Error occurred during upgrade. Update manually. (Exit code -1)"
             $type = "Error"
         } Else {
-            $msg = "Unknown error occurred. Exit code: $exitCode`n$($_.Exception)"
+            $msg = "Unknown error occurred. Exit code: $exitCode`n$($_.Exception)`nSee Log File for details"
             $type = "Error"
         }
         $mnuMsg.Text = $msg
@@ -265,8 +285,12 @@ function check_for_outdated {
     Write-Host "[$($checkDate.toString())] Outdated-check started"
     check_choco
     $outdated_raw = choco outdated -r    
-    # $exitCode = $LastExitCode # Exit codes: https://docs.chocolatey.org/en-us/choco/commands/outdated#exit-codes
-    [array]$outdated = ConvertFrom-Csv -InputObject $outdated_raw -Delimiter '|' -Header 'name','current','available','pinned'
+    # Exit codes: https://docs.chocolatey.org/en-us/choco/commands/outdated#exit-codes
+    if ($null -eq $outdated_raw) {
+        $outdated = @()
+    } Else {
+        [array]$outdated = (ConvertFrom-Csv -InputObject $outdated_raw -Delimiter '|' -Header 'name','current','available','pinned')
+    }
     if ($settings.test_mode) {
         if (-Not ($outdated.Count -gt 0)) {
             Write-Host "[$((Get-Date).toString())] TEST MODE! Adding dummy outdated package: 'DummyTest'"
@@ -351,7 +375,7 @@ $timer.Add_Tick({
             Write-Host "[$($end_time.toString())] Next outdated-check will be in $($settings.check_delay_hours) hours at approx: $($next_check_time.toString())"
             Set-Variable -Name "next_check_time" -Value $next_check_time -Scope Script  # Store the new next_time in the outer scope
         } Else {
-            Write-Host "[$((Get-Date).toString())] Following error, next outdated-check will be in 1 minute"
+            Write-Host "[$(($end_time).toString())] Following error, next outdated-check will be in 1 minute"
         }
     }
 })
