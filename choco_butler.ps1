@@ -60,15 +60,17 @@ assert ([System.Version]::Parse($choco_ver) -ge '0.11.1') "Requires Chocolatey V
       
 
 
-# Check we're not getting errors that will prevent parsing the choco command output
-function check_choco {
-    # If chocolately updates itself it can get confused. Check for this by running trivial 'choco help' command.
+# Check for the "choco old" problem due to presence of a choco.exe.old file.
+# This seems to occur when choco updates itself.
+# This error will prevent correct parsing of the choco command output.
+function check_choco_old {
+    # If chocolately updates itself it can get confused. Check for this by running trivial 'choco -v' command.
     # If it's goes wrong you'll see something like:
     #         "Access to the path 'C:\ProgramData\chocolatey\choco.exe.old' is denied."
-    $res = (choco dummy | Select-String 'choco.exe.old'' is denied')  # I know "dummy" is not a command, but there's "noop" command in choco?!
+    $res = (choco -v | Select-String 'choco.exe.old'' is denied') 
     assert (-Not ($res.Count -gt 0)) "Chocolately is no longer working properly (it probably updated itself).`nDelete 'choco.exe.old' file.`nReboot is likely required :-(`nChocoButler will now exit.`n`n`n$res" "Chocolately Error"
 }
-check_choco
+check_choco_old
 
 
 
@@ -191,7 +193,7 @@ function do_upgrade {
     #$objNotifyIcon.BalloonTipTitle = "ChocoButler" 
     #$objNotifyIcon.ShowBalloonTip(3000)
 
-    $outdated_packages = $outdated -join ' '  # Space-separated list of packages
+    $outdated_packages = $outdated.name -join ' '  # Space-separated list of packages
     $upgradeStart = Get-Date
     $mnuDate.Text = "Upgrading began: $($upgradeStart.toString())"
     Write-Host "[$($upgradeStart.toString())] Upgrading packages: $outdated_packages"
@@ -260,7 +262,8 @@ function do_upgrade {
         $objNotifyIcon.ShowBalloonTip(30000)
         $mnuInstall.Enabled = $old_mnuInstall_Enabled # Restore the previous state if it didn't work
     }
-    check_choco
+    check_choco_old
+
     $mnuCheck.Enabled = $true
     $timer.Start()
 }
@@ -293,7 +296,8 @@ function check_for_outdated {
     $mnuMsg.Text = "Checking for outdated packages..."
     $mnuDate.Text = "Checking started: $($checkDate.toString())"
     Write-Host "[$($checkDate.toString())] Outdated-check started"
-    check_choco
+    check_choco_old
+
     $outdated_raw = choco outdated -r --ignore-pinned  
     # Exit codes: https://docs.chocolatey.org/en-us/choco/commands/outdated#exit-codes
     if ($null -eq $outdated_raw) {
@@ -320,9 +324,9 @@ function check_for_outdated {
         Write-Host "[$((Get-Date).toString())] Error retrieving data"
         Write-Host $outdated_csv
         $objNotifyIcon.Text = "ChocoButler`nError retrieving data"
-        $mnuMsg.Text = "Error retrieving data"
+        $mnuMsg.Text = "Error retrieving data (see log file, via Advanced menu)"
         $mnuDate.Text = "Error occurred: $($checkDate.toString())"
-        $objNotifyIcon.Icon = $icon        
+        $objNotifyIcon.Icon = $icon_red        
         $ok = $false
     } Else {
         if ($outdated.Count -gt 0) {
