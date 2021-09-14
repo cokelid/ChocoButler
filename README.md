@@ -28,7 +28,7 @@ ChocoButler will first check for outdated packages 1 minute after you start Choc
 
 Normally the regular blue/brown Chocolatey icon is shown in the system tray. If packages are available for upgrade, the icon will turn red. When updated packages are found, a popup will display also.
 
-To install available updates, right-click on the system tray icon and select "Install updates". This will install **all** available package updates without prompting for confirmations. This effectively runs `choco upgrade all --yes` under the covers.
+To install available updates, right-click on the system tray icon and select "Install updates". This will install outdated package updates without prompting for confirmations. This effectively runs `choco upgrade <packages> --yes` under the covers.
 
 By right-clicking the ChocoButler icon you can see when the last update or check occurred. You can also start the Chocolatey GUI (if installed) via the icon, and exit ChocoButler too.
  
