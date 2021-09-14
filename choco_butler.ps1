@@ -287,6 +287,7 @@ function do_upgrade_dialog {
 function check_for_outdated {
     $timer.Stop()
     $mnuCheck.Enabled = $false
+    $mnuInstall.Enabled = $false
     $checkDate = Get-Date
     $objNotifyIcon.Text = "ChocoButler`nChecking for outdated packages..."
     $mnuMsg.Text = "Checking for outdated packages..."
@@ -313,7 +314,6 @@ function check_for_outdated {
         }
     }
     $outdated_csv = $outdated.name -join ', '  # For display in bubble
-    $mnuMsg.Text = "$($outdated.Count) outdated packages"
     $mnuDate.Text = "Last outdated check: $($checkDate.toString())"
     Set-Variable -Name "outdated" -Value $outdated -Scope Script  # Store the $outdated in the outer scope so it can be used by do_upgrade_dialog
     If ($outdated_csv -match 'Error retrieving') {
@@ -322,21 +322,30 @@ function check_for_outdated {
         $objNotifyIcon.Text = "ChocoButler`nError retrieving data"
         $mnuMsg.Text = "Error retrieving data"
         $mnuDate.Text = "Error occurred: $($checkDate.toString())"
-        $objNotifyIcon.Icon = $icon
-        $mnuInstall.Enabled = $false
+        $objNotifyIcon.Icon = $icon        
         $ok = $false
     } Else {
         if ($outdated.Count -gt 0) {
+            if ($outdated.Count -eq 1) {$plural = ""} Else {$plural = "s"}
             $objNotifyIcon.Icon = $icon_red
             $mnuInstall.Enabled = $true
             $objNotifyIcon.BalloonTipIcon = "Info" # Should be one of: None, Info, Warning, Error  
-            $objNotifyIcon.BalloonTipText = "$($outdated.Count) outdated pacakages`nOutdated: $outdated_csv"
+            $objNotifyIcon.BalloonTipText = "$($outdated.Count) outdated package$($plural):`n$outdated_csv"
             $objNotifyIcon.BalloonTipTitle = "Chocolately Outdated Packages"
             # register-objectevent $objNotifyIcon BalloonTipClicked BalloonClicked_event -Action { do_upgrade_dialog }        
             $objNotifyIcon.ShowBalloonTip(10000)
             Write-Host "[$((Get-Date).toString())] Outdated-check complete; 'choco outdated' exit code: $($LastExitCode)"
-            Write-Host "[$((Get-Date).toString())] $($outdated.Count) outdated pacakages: $outdated_csv"
-            $objNotifyIcon.Text = "ChocoButler`n$($outdated.Count) outdated packages"    
+            Write-Host "[$((Get-Date).toString())] $($outdated.Count) outdated package$($plural): $outdated_csv"
+            
+            if ($outdated_csv.length -gt 29) {
+                $outdated_csv_short = $outdated_csv.SubString(0, 25)
+                $outdated_csv_short = "$outdated_csv_short ..."   
+            } Else {
+                $outdated_csv_short = $outdated_csv
+            }
+            
+            $objNotifyIcon.Text = "ChocoButler`n$($outdated.Count) outdated package$($plural): $outdated_csv_short"
+            $mnuMsg.Text = "$($outdated.Count) outdated package$($plural): $outdated_csv_short"
             if ($settings.auto_install) { do_upgrade }
 
         } else {
