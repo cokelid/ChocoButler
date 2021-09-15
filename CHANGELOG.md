@@ -1,6 +1,6 @@
 # ChocoButler Changelog
 
-## Unreleased
+## [[v0.1.1](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.1)] 2021-09-15
 ### Added
 * Shows pop-up even for no outdated packages when check is manually instigated. This way you know it's done something, and not ignoring your click.
 * Only update specific packages previously found to be outdated (before we just did `choco update all`). This keeps the log clean and prevents packages being updated that have become outdated since the last check.
