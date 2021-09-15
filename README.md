@@ -1,7 +1,7 @@
 # ChocoButler - An automatic updater for Chocolatey
 ChocoButler is a small app that works with [Chocolatey](https://chocolatey.org/), periodically checking for outdated packages, and allowing them to be upgraded.
 
-ChocoButler sits in the system tray (i.e. notification area) of Windows. Its icon changes colour and an alert pops-up when upgrades are available.
+ChocoButler sits in the system tray (i.e. notification area) of Windows. Its icon changes colour and an alert pops-up when upgrades are available. See [screenshots](#screenshots) for examples.
 
 Rather than running upgrades on a fixed schedule, ChocoButler alerts you when updates are available and allows you to start the upgrades at a time convenient for you. (If you just want regular, scheduled updates without user interaction there are better ways to achieve this, though you can do that too with ChocoButler if you really want to).
 
@@ -52,7 +52,36 @@ Generally the `test_mode` setting should be left as `false`. See [Testing & Deve
 You must restart ChocoButler for settings changes to take affect.
 
 
-## TESTING & DEVELOPMENT
+## Screenshots
+
+On detecting outdated packages, an alert pop-up is shown, and the Chocolatey icon in the system tray (notification area) turns red:
+
+![Outdated package pop-up](./img/screenshot-01-alert.png?raw=true)
+
+You may need to expand the system tray (notification area) with the up-arrow to see the icon. Hovering the mouse over the (red) icon displays the number (and names) of outdated packages:
+
+![Tooltip showing number outdated packages](./img/screenshot-02-tooltip.png?raw=true)
+
+Right-clicking the icon shows a menu, including the option to "Install upgrades...":
+
+![Context menu from right-clicking icon](./img/screenshot-03-menu.png?raw=true)
+
+A confirmation box, showing packages to be upgraded, is shown before installation:
+
+![Upgrade confirmation dialog](./img/screenshot-04-confirm.png?raw=true)
+
+A pop-up displays when upgrades are complete:
+
+![Upgrade success pop-up](./img/screenshot-05-success.png?raw=true)
+
+When no outdated packages are available for upgrade (e.g. post-install) the icon returns to the regular blue and brown Chocolatey icon. Hovering over the icon displays "No outdated packages":
+
+![Normal icon for no outdated packages](./img/screenshot-06-post-install.png?raw=true)
+
+
+
+
+## Testing & Development
 
 There is a built in _test mode_ to help when testing and developing the app. You can enable the _test mode_ by setting `"test_mode": true` in the `settings.json` file.
 
