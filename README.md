@@ -32,7 +32,7 @@ To install available updates, right-click on the system tray icon and select "In
 
 By right-clicking the ChocoButler icon you can see when the last update or check occurred. You can also start the Chocolatey GUI (if installed) via the icon, and exit ChocoButler too.
 
-See [screenshots](#screenshots) for examples
+See [screenshots](#screenshots) for examples.
 
 
 
