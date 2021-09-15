@@ -33,24 +33,7 @@ To install available updates, right-click on the system tray icon and select "In
 By right-clicking the ChocoButler icon you can see when the last update or check occurred. You can also start the Chocolatey GUI (if installed) via the icon, and exit ChocoButler too.
 
 See [screenshots](#screenshots) for examples
- 
-## Configuration & Settings
-Settings exist in the `settings.json` text file. Edit this file to configure ChocoButler. The following settings are available:
 
-### `check_delay_hours`
-By default ChocoButler checks for outdated packages every 12 hours. To change this, edit the `settings.json` file and change the `check_delay_hours` value.
-
-### `auto_install`
-By default, ChocoButler will alert you to available updates, and you then start the installation process (from the system tray icon) at a convenient time. This way you don't upgrade Zoom in the middle of a video meeting, say. However if you want the upgrade installation to occur automatically, and as soon as outdated packages are available, you can change the `auto_install` setting to `true`.
-
-Even with auto_install turned on, you'll probably still need to click a box to allow choco to make changes, and these requests could pop up at any time (and so could be annoying).
-To avoid this, you could run the whole Powershell script as Admin, then you won't get prompted (but this is probably not a great idea from a security point of view). Overall ChocoButler was not built for fully automated updates, so this will seem a bit clunky.
-
-### `test_mode`
-Generally the `test_mode` setting should be left as `false`. See [Testing & Development](#testing--development) below for more details.
-
-### Apply Changes
-You must restart ChocoButler for settings changes to take affect.
 
 
 ## Screenshots
@@ -81,6 +64,23 @@ When no outdated packages are available for upgrade (e.g. post-install) the icon
 
 
 
+## Configuration & Settings
+Settings exist in the `settings.json` text file. Edit this file to configure ChocoButler. The following settings are available:
+
+### `check_delay_hours`
+By default ChocoButler checks for outdated packages every 12 hours. To change this, edit the `settings.json` file and change the `check_delay_hours` value.
+
+### `auto_install`
+By default, ChocoButler will alert you to available updates, and you then start the installation process (from the system tray icon) at a convenient time. This way you don't upgrade Zoom in the middle of a video meeting, say. However if you want the upgrade installation to occur automatically, and as soon as outdated packages are available, you can change the `auto_install` setting to `true`.
+
+Even with auto_install turned on, you'll probably still need to click a box to allow choco to make changes, and these requests could pop up at any time (and so could be annoying).
+To avoid this, you could run the whole Powershell script as Admin, then you won't get prompted (but this is probably not a great idea from a security point of view). Overall ChocoButler was not built for fully automated updates, so this will seem a bit clunky.
+
+### `test_mode`
+Generally the `test_mode` setting should be left as `false`. See [Testing & Development](#testing--development) below for more details.
+
+### Apply Changes
+You must restart ChocoButler for settings changes to take affect.
 
 ## Testing & Development
 
