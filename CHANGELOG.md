@@ -5,6 +5,7 @@
 
 ### Changes
 * In test_mode, when no outdated packages are available, fake outdated with a real package (GoogleChrome) rather than a dummy package. In test_mode updates are performed with `--noop` so it won't affect anything.
+* In test_mode, show [TEST MODE] on the install menu to be clear it won't make changes. 
 
 ## [[v0.1.1](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.1)] 2021-09-15
 ### Added

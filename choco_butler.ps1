@@ -145,7 +145,7 @@ $mnuExit.add_Click({
 })
 
 $mnuInstall = New-Object System.Windows.Forms.MenuItem
-$mnuInstall.Text = "Install upgrades..."
+$mnuInstall.Text = If ($settings.test_mode) {"[TEST MODE] Install upgrades..."} Else {"Install upgrades..."}
 $mnuInstall.Enabled = $false
 $mnuInstall.add_Click({
    do_upgrade_dialog   
