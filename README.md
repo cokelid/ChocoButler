@@ -7,7 +7,7 @@ Rather than running upgrades on a fixed schedule, ChocoButler alerts you when up
 
 
 ## Installation & Running
-In short: [download](https://github.com/cokelid/ChocoButler/archive/refs/tags/v0.1.1.zip) the files, unzip to a folder, double-click the `choco_butler.bat` file.
+In short: [download](https://github.com/cokelid/ChocoButler/archive/refs/tags/v0.1.2.zip) the files, unzip to a folder, double-click the `choco_butler.bat` file.
 
 Alternatively clone the [github repo](https://github.com/cokelid/ChocoButler.git) and run the `choco_butler.bat` file.
 
