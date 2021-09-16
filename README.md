@@ -1,4 +1,4 @@
-# ChocoButler - An automatic updater for Chocolatey
+# ChocoButler - An automatic package upgrader for Chocolatey
 ChocoButler is a small app that works with [Chocolatey](https://chocolatey.org/), periodically checking for outdated packages, and allowing them to be upgraded.
 
 ChocoButler sits in the system tray (i.e. notification area) of Windows. Its icon changes colour and an alert pops-up when upgrades are available. See [screenshots](#screenshots) for examples.
