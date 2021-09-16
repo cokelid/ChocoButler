@@ -1,5 +1,11 @@
 # ChocoButler Changelog
 
+
+## Unreleased
+
+### Changes
+* In test_mode, when no outdated packages are available, fake outdated with a real package (GoogleChrome) rather than a dummy package. In test_mode updates are performed with `--noop` so it won't affect anything.
+
 ## [[v0.1.1](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.1)] 2021-09-15
 ### Added
 * Shows pop-up even for no outdated packages when check is manually instigated. This way you know it's done something, and not ignoring your click.

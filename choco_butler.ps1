@@ -307,10 +307,10 @@ function check_for_outdated {
     }
     if ($settings.test_mode) {
         if (-Not ($outdated.Count -gt 0)) {
-            Write-Host "[$((Get-Date).toString())] TEST MODE! Adding dummy outdated package: 'DummyTest'"
-            # We're in TEST MODE so, and there are no updates, so add a fake dummy package (an @array containing one object)
+            Write-Host "[$((Get-Date).toString())] TEST MODE! Faking an outdated package: 'GoogleChrome'"
+            # We're in TEST MODE so, and there are no updates, so fake an outdated package (an @array containing one object)
             $outdated = @([PSCustomObject]@{
-                name     = 'DummyTest'
+                name     = 'GoogleChrome'
                 current  = '1.0'
                 available = '1.1'
                 pinned = $false

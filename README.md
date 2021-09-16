@@ -89,9 +89,9 @@ There is a built in _test mode_ to help when testing and developing the app. You
 The test_mode leads to four changes in behaviour:
 
 1) The first check for outdated-packages occurs as soon as the script starts (not one minute after as is the normal behaviour)
-2) If no outdated packages are found, a dummy package ("DummyTest") is added to the outdated list
+2) If no outdated packages are found, the GoogleChrome package is added to the outdated list for testing
 3) No changes are made during the installation of upgrades, it just does a dry-run (i.e. the `--noop` switch is passed to `choco upgrade`)
-4) On exit, `Exit` is called rather than `Stop-Process`. This is less likely to kill your IDE! YMMV.
+4) On exit, `Exit` is called rather than `Stop-Process`. This is less likely to kill your IDE. YMMV.
 
 The above changes allow you to quickly test the main check->upgrade workflow, without having to wait for an actual outdated packages to appear.
 
