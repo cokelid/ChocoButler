@@ -1,7 +1,7 @@
 # ChocoButler Changelog
 
-## Unreleased
-
+## [[v0.1.3](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.3)] 2021-09-19
+New silent option added to settings.
 ### Added
 * New `silent` option in settings file to allow suppression of pop-ups. Pop-ups will still be shown for errors and warnings, even if this setting is turned on.
 
@@ -23,3 +23,4 @@ Only changes to test_mode.
 
 ## [[v0.1.0](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.0)] 2021-09-13
 First Release!
+
