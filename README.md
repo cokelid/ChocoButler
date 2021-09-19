@@ -70,6 +70,9 @@ Settings exist in the `settings.json` text file. Edit this file to configure Cho
 ### `check_delay_hours`
 By default ChocoButler checks for outdated packages every 12 hours. To change this, edit the `settings.json` file and change the `check_delay_hours` value.
 
+### `silent`
+Suppress alert pop-ups by setting `silent` to `true`. Alerts will still be shown for warnings and errors, even with this setting turned on.
+
 ### `auto_install`
 By default, ChocoButler will alert you to available updates, and you then start the installation process (from the system tray icon) at a convenient time. This way you don't upgrade Zoom in the middle of a video meeting, say. However if you want the upgrade installation to occur automatically, and as soon as outdated packages are available, you can change the `auto_install` setting to `true`.
 

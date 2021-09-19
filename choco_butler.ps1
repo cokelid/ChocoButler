@@ -16,7 +16,8 @@ $objNotifyIcon = New-Object System.Windows.Forms.NotifyIcon
 $next_check_time = Get-Date
 $timer = New-Object System.Windows.Forms.Timer
 [array]$outdated = @()
-$settings = [PSCustomObject]@{check_delay_hours=12; auto_install=$False; test_mode=$False}
+# Default settings
+$settings = [PSCustomObject]@{check_delay_hours=12; auto_install=$False; silent=$False; test_mode=$False}
 
 function assert($condition, $message, $title) {
     if (-Not $condition) {
@@ -38,7 +39,10 @@ function load_settings {
     assert $ok "Cannot load settings.json file. Syntax Error?:`n$($settingsPath)`nChocoButler will now exit." "ChocoButler Settings Error"
     # Ensure $s has same settings (Properties) as existing $settings
     Foreach ($k in $settings.PSObject.Properties.Name) {
-        assert (Get-Member -InputObject $s -Name $k) "Could not find '$k' in settings.json file" "ChocoButler Settings Error"
+        if (-Not(Get-Member -InputObject $s -Name $k)) {
+            Write-Host "[$((Get-Date).toString())] No entry for ""$k"" found in settings file. Using default: $($settings.($k))"
+            $s | Add-Member -NotePropertyName $k -NotePropertyValue $settings.($k)
+        }
     }
     Foreach ($k in $s.PSObject.Properties.Name) {
         assert (Get-Member -InputObject $settings -Name $k) "Unexpected setting '$k' in settings.json file" "ChocoButler Settings Error"
@@ -120,7 +124,7 @@ $mnuCheck.add_Click({
             $objNotifyIcon.BalloonTipIcon = "Info" # Should be one of: None, Info, Warning, Error  
             $objNotifyIcon.BalloonTipText = "No outdated chocolatey pacakages found"
             $objNotifyIcon.BalloonTipTitle = "No Outdated Packages"
-            $objNotifyIcon.ShowBalloonTip(5000)
+            if (-Not($settings.silent)) {$objNotifyIcon.ShowBalloonTip(5000)}
         }
     } Else {
         Write-Host "[$(($end_time).toString())] Following error, next outdated-check will be in 1 minute"
@@ -188,10 +192,6 @@ function do_upgrade {
     $mnuCheck.Enabled = $false
     $objNotifyIcon.Text = "ChocoButler`nUpgrading Packages..."
     $mnuMsg.Text = "Upgrading $($outdated.Count) packages..."
-    #$objNotifyIcon.BalloonTipIcon = "Info" # Should be one of: None, Info, Warning, Error  
-    #$objNotifyIcon.BalloonTipText = "Chocolately UPGRADE of all packages has STARTED"
-    #$objNotifyIcon.BalloonTipTitle = "ChocoButler" 
-    #$objNotifyIcon.ShowBalloonTip(3000)
 
     $outdated_packages = $outdated.name -join ' '  # Space-separated list of packages
     $upgradeStart = Get-Date
@@ -227,7 +227,7 @@ function do_upgrade {
         $objNotifyIcon.BalloonTipIcon = "Info" # Should be one of: None, Info, Warning, Error  
         $objNotifyIcon.BalloonTipText = "Chocolately UPGRADE SUCCESS!"
         $objNotifyIcon.BalloonTipTitle = "ChocoButler"
-        $objNotifyIcon.ShowBalloonTip(4000)
+        if (-Not($settings.silent)) {$objNotifyIcon.ShowBalloonTip(4000)}
         $mnuInstall.Enabled = $false  # Worked, so don't want to rerun.
         $objNotifyIcon.Icon = $icon  # regular icon
         Set-Variable -Name "outdated" -Value @() -Scope Script # Reset the outdated list to empty in the outer scope
@@ -259,7 +259,7 @@ function do_upgrade {
         $objNotifyIcon.BalloonTipIcon = $type # Should be one of: None, Info, Warning, Error  
         $objNotifyIcon.BalloonTipText = $msg
         $objNotifyIcon.BalloonTipTitle = "Chocolately Upgrade (ChocoButler)" 
-        $objNotifyIcon.ShowBalloonTip(30000)
+        $objNotifyIcon.ShowBalloonTip(30000)  # Possible error so show if silent
         $mnuInstall.Enabled = $old_mnuInstall_Enabled # Restore the previous state if it didn't work
     }
     check_choco_old
@@ -337,7 +337,7 @@ function check_for_outdated {
             $objNotifyIcon.BalloonTipText = "$($outdated.Count) outdated package$($plural):`n$outdated_csv"
             $objNotifyIcon.BalloonTipTitle = "Chocolately Outdated Packages"
             # register-objectevent $objNotifyIcon BalloonTipClicked BalloonClicked_event -Action { do_upgrade_dialog }        
-            $objNotifyIcon.ShowBalloonTip(10000)
+            if (-Not($settings.silent)) {$objNotifyIcon.ShowBalloonTip(10000)}
             Write-Host "[$((Get-Date).toString())] Outdated-check complete; 'choco outdated' exit code: $($LastExitCode)"
             Write-Host "[$((Get-Date).toString())] $($outdated.Count) outdated package$($plural): $outdated_csv"
             
@@ -404,7 +404,7 @@ $timer.Add_Tick({
 if ($settings.test_mode) {
     # Check immediately in test mode
     Write-Host "[$((Get-Date).toString())] TEST MODE! Starting outdated-check immediately."
-    check_for_outdated
+    $ok = check_for_outdated
 } else {
     Write-Host "[$((Get-Date).toString())] First outdated-check will start in 1 minute..."
 }
