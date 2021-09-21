@@ -4,10 +4,9 @@
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
 
-if ((Get-Host).Version -lt '5.1') {
-    # Do we need this? Not tested on any other PS version, and not clear if the dialog box would work in older PS?
-    Write-Host "ChocoButler requires Powershell 5.1 or above."
-    [System.Windows.Forms.MessageBox]::Show("ChocoButler requires Powershell 5.1 or above.`nChocoButler will now exit.", "Powershell Version Error", 'OK', 'Error')
+if ((Get-Host).Version -lt '4.0') {    
+    Write-Host "ChocoButler requires Powershell 4.0 or above."
+    [System.Windows.Forms.MessageBox]::Show("ChocoButler requires Powershell 4.0 or above.`nChocoButler will now exit.", "Powershell Version Error", 'OK', 'Error')
     Exit 1
 }
 
