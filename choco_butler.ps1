@@ -31,8 +31,8 @@ function assert($condition, $message, $title) {
     }
 }
 
-function load_settings {
-    $settingsPath = $PSScriptRoot+"\settings.json"
+$settingsPath = $PSScriptRoot+"\settings.json"
+function load_settings {    
     assert (Test-Path $settingsPath) "Cannot find settings.json file:`n$($settingsPath)`nChocoButler will now exit." "ChocoButler Settings Error"
     $s = Get-Content -Raw -Path $settingsPath | ConvertFrom-Json  # Will not fail if file missing
     $ok = ($s -is [System.Object])
@@ -166,15 +166,23 @@ $mnuAdvanced.Enabled = $true
 $mnuShowLog = New-Object System.Windows.Forms.MenuItem
 $log_file_path = 'C:\ProgramData\chocolatey\logs\chocolatey.log'  # Is there a way to discover this?
 if (Test-Path $log_file_path) {
-    $mnuShowLog.Text = "Show log file"
+    $mnuShowLog.Text = "Show Chocolatey log file"
     $mnuShowLog.Enabled = $true
-    $mnuShowLog.add_Click({
-        Invoke-Item $log_file_path   
-    })
+    $mnuShowLog.add_Click({ Invoke-Item $log_file_path })
 } Else {
     $mnuShowLog.Text = "(Log file not found?)"
     $mnuShowLog.Enabled = $false
 }
+
+$mnuEditSettings = New-Object System.Windows.Forms.MenuItem
+$mnuEditSettings.Text = "Edit Settings file"
+$mnuEditSettings.Enabled = $true
+$mnuEditSettings.add_Click({ Invoke-Item $settingsPath })
+
+$mnuShowReadme = New-Object System.Windows.Forms.MenuItem
+$mnuShowReadme.Text = "Open README (on web)"
+$mnuShowReadme.Enabled = $true
+$mnuShowReadme.add_Click({ Start-Process 'https://github.com/cokelid/ChocoButler#readme' })
 
 $context_menu = New-Object System.Windows.Forms.ContextMenu
 $objNotifyIcon.ContextMenu = $context_menu
@@ -185,6 +193,8 @@ $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuCheck)
 $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuOpen)
 $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuAdvanced)
 $mnuAdvanced.MenuItems.AddRange($mnuShowLog)
+$mnuAdvanced.MenuItems.AddRange($mnuEditSettings)
+$mnuAdvanced.MenuItems.AddRange($mnuShowReadme)
 $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuExit)
 
 
