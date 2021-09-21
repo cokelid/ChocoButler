@@ -108,7 +108,6 @@ The above changes allow you to quickly test the main check->upgrade workflow, wi
 
 ## TODO
 1) Ideally if you click on the "Updates Available" pop-up message you'd be able to start the install, but I can't get the `BalloonTipClicked` object event to work reliably. See comments in code.
-1) Make some better icons
 1) Read settings changes on the fly
 1) Add option/setting to prevent the update-window from closing when complete
 1) Create a chocolatey install package for ChocoButler, so it can be installed via chocolatey
