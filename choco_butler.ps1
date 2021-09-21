@@ -17,7 +17,7 @@ $next_check_time = Get-Date
 $timer = New-Object System.Windows.Forms.Timer
 [array]$outdated = @()
 # Default settings
-$settings = [PSCustomObject]@{check_delay_hours=12; auto_install=$False; silent=$False; test_mode=$False}
+$settings = [PSCustomObject]@{check_delay_hours=12; auto_install=$False; silent=$False; test_mode=$False; exit_if_no_outdated=$False; immediate_first_check=$False}
 
 function assert($condition, $message, $title) {
     if (-Not $condition) {
@@ -366,6 +366,14 @@ function check_for_outdated {
         $ok = $true
     }
     
+    If ($settings.exit_if_no_outdated) {
+        if ($outdated.Count -eq 0) {
+            Write-Host "[$((Get-Date).toString())] Exiting since exit_if_no_outdated=True"
+            if ($settings.test_mode) { Exit 1 } else { Stop-Process $pid }
+        }
+    }
+
+
     $timer.Start()
     $mnuCheck.Enabled = $true
     return $ok
@@ -388,11 +396,10 @@ $objNotifyIcon.Visible = $true
 # Create a timer to check every minute if a new check is due.
 # Do polling like this to support hibernate/sleep so after come of sleep/hibernate, and if N hours since last check, then one will trigger.
 # This does making the timings of the checks less accurate (+- 1 minute) but that doesn't really matter.
-$timer.Interval = 60000  
-$timer.Add_Tick({
+function tick_check {
+    # This function gets called every time the timer ticks
     $now = Get-Date
     if ($now -gt $next_check_time) {
-        Write-Host "[$($now.toString())] Time for new outdated-check (as of $($next_check_time.toString()))."        
         $ok = check_for_outdated
         $end_time = Get-Date
         if ($ok) {
@@ -404,12 +411,18 @@ $timer.Add_Tick({
             Write-Host "[$(($end_time).toString())] Following error, next outdated-check will be in 1 minute"
         }
     }
-})
+}
+
+$timer.Interval = 60000  
+$timer.Add_Tick( {tick_check} )
 if ($settings.test_mode) {
     # Check immediately in test mode
     Write-Host "[$((Get-Date).toString())] TEST MODE! Starting outdated-check immediately."
-    $ok = check_for_outdated
-} else {
+    tick_check  # Do the first "tick" of the timer now
+} elseif ($settings.immediate_first_check) {
+    Write-Host "[$((Get-Date).toString())] Starting first outdated-check..."
+    tick_check # Do the first "tick" of the timer now
+} else {    
     Write-Host "[$((Get-Date).toString())] First outdated-check will start in 1 minute..."
 }
 $timer.Start()  # First check will occur in 1 minute when the timer triggers. Don't do it right away to prevent hammering on start-up.

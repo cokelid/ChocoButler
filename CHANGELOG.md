@@ -1,6 +1,10 @@
 # ChocoButler Changelog
 
 ## Unreleased
+
+### Added
+* New `exit_if_no_outdated` setting, to exit immediately if not outdated packages are found
+* New `immediate_first_check` setting, to perform first outdated-check as soon as ChocoButler starts
 ### Changes
 * Improved checking for a _Chocolatey GUI_ installation
 

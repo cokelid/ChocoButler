@@ -24,7 +24,7 @@ To set up ChocoButler to run every time you start Windows, copy a shortcut of th
 
 
 ## Usage
-ChocoButler will first check for outdated packages 1 minute after you start ChocoButler (and every N hours thereafter). This delay prevents your PC getting hammered at startup. If you're keen to check sooner, right-click on the Chocolatey icon in the system tray and click "Check for outdated packages now".
+ChocoButler will first check for outdated packages 1 minute after you start ChocoButler (and every N hours thereafter). This delay prevents your PC getting hammered at startup. If you're keen to check sooner, right-click on the Chocolatey icon in the system tray and click "Check for outdated packages now" (or change the `immediate_first_check` [setting](#configuration--settings)).
 
 Normally the regular blue/brown Chocolatey icon is shown in the system tray. If packages are available for upgrade, the icon will turn red. When outdated packages are found, a popup will display also.
 
@@ -72,6 +72,14 @@ By default ChocoButler checks for outdated packages every 12 hours. To change th
 
 ### `silent`
 Suppress alert pop-ups by setting `silent` to `true`. Alerts will still be shown for warnings and errors, even with this setting turned on.
+
+### `exit_if_no_outdated`
+Normally ChocoButler will check in the background for outdated packages every few hours. However if `exit_if_no_outdated` is set to `true`, ChocoButler will exit after an outdated-check find no packages are available for upgrade.
+
+You may want to pair this with the `immediate_first_check` setting.
+
+### `immediate_first_check`
+By default, ChocoButler waits 1 minute before doing its first outdated-check; this helps prevent hammering the PC on startup. Set `immediate_first_check` to `true` to have the first check start immediately.
 
 ### `auto_install`
 By default, ChocoButler will alert you to available updates, and you then start the installation process (from the system tray icon) at a convenient time. This way you don't upgrade Zoom in the middle of a video meeting, say. However if you want the upgrade installation to occur automatically, and as soon as outdated packages are available, you can change the `auto_install` setting to `true`.
