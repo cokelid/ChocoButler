@@ -318,6 +318,8 @@ function check_for_outdated {
         $outdated = @()
     } Else {
         [array]$outdated = (ConvertFrom-Csv -InputObject $outdated_raw -Delimiter '|' -Header 'name','current','available','pinned')
+        # For packages installed from files (i.e. during testing) they can show up as outdated, even though current==available. So filter these.
+        [array]$outdated = $outdated.where( { [System.Version]$_.current -lt [System.Version]$_.available } )
     }
     if ($settings.test_mode) {
         if (-Not ($outdated.Count -gt 0)) {
