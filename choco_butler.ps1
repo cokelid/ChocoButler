@@ -439,6 +439,7 @@ if ($settings.test_mode) {
 }
 $timer.Start()  # First check will occur in 1 minute when the timer triggers. Don't do it right away to prevent hammering on start-up.
 
+# See: https://www.systanddeploy.com/2018/12/create-your-own-powershell.html
 # [System.GC]::Collect() # Help reduce memory
 $appContext = New-Object System.Windows.Forms.ApplicationContext
 [void][System.Windows.Forms.Application]::Run($appContext)

@@ -9,6 +9,7 @@
 ### Changes
 * Improved checking for a _Chocolatey GUI_ installation
 * New icons with alpha channel
+* Extra filtering on outdated checks for manually installed packages
 
 
 ## [[v0.1.3](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.3)] 2021-09-19
