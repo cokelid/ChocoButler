@@ -78,7 +78,7 @@ check_choco_old
 
 
 
-$gui_obj = Get-Command chocolateygui  # Returns an object
+Try {$gui_obj = Get-Command 'chocolateygui' -ErrorAction Stop} Catch {$gui_obj = $null}  # Returns an object
 if ( $gui_obj.Count -gt 0 ) {
     $gui = $gui_obj.Source  # This is the path
 } else {
@@ -87,10 +87,14 @@ if ( $gui_obj.Count -gt 0 ) {
         $gui = "C:\Program Files\Chocolatey GUI\ChocolateyGui.exe"
         if (-Not (Test-Path $gui)) {
             $lnk = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Chocolatey GUI.lnk"
-            $sh = New-Object -ComObject WScript.Shell
-            $gui = $sh.CreateShortcut($lnk).TargetPath
-            if (-Not (Test-Path $gui)) {
-                $gui = ""
+            if (Test-Path $lnk) {
+                $sh = New-Object -ComObject WScript.Shell
+                $gui = $sh.CreateShortcut($lnk).TargetPath
+                if (-Not (Test-Path $gui)) {
+                    $gui = ""
+                }
+            } Else {
+                $gui = ''
             }
         }
     }

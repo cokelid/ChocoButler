@@ -1,5 +1,10 @@
 # ChocoButler Changelog
 
+## Unreleased
+### Changes
+* Improved checking for a _Chocolatey GUI_ installation
+
+
 ## [[v0.1.3](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.3)] 2021-09-19
 New silent option added to settings.
 ### Added
