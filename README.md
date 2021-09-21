@@ -91,7 +91,7 @@ To avoid this, you could run the whole Powershell script as Admin, then you won'
 Generally the `test_mode` setting should be left as `false`. See [Testing & Development](#testing--development) below for more details.
 
 ### Apply Changes
-You must restart ChocoButler for settings changes to take affect.
+You must restart ChocoButler for settings changes to take effect.
 
 ## Testing & Development
 
