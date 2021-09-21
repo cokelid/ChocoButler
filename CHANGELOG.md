@@ -8,6 +8,7 @@
 * New menu entries under 'Advanced' to edit settings file, and show the README file on the web
 ### Changes
 * Improved checking for a _Chocolatey GUI_ installation
+* New icons with alpha channel
 
 
 ## [[v0.1.3](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.3)] 2021-09-19
