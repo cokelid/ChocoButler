@@ -1,7 +1,7 @@
 # ChocoButler Changelog
 
-## Unreleased
-
+## [[v0.1.4](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.4)] 2021-09-22
+Two new settings, two new Advanced menu items, new icons
 ### Added
 * New `exit_if_no_outdated` setting, to exit immediately if no outdated packages are found
 * New `immediate_first_check` setting, to perform first outdated-check as soon as ChocoButler starts
@@ -35,4 +35,5 @@ Only changes to test_mode.
 
 ## [[v0.1.0](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.0)] 2021-09-13
 First Release!
+
 
