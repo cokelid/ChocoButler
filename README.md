@@ -9,20 +9,20 @@ Rather than running upgrades on a fixed schedule, ChocoButler alerts you when up
 ![ChocoButler Red Chocolatey Icon](./img/chocolatey_icon_red_48x48.png?raw=true)
 
 ## Installation & Running
-In short: [download](https://github.com/cokelid/ChocoButler/archive/refs/tags/v0.1.4.zip) the files, unzip to a folder, double-click the `choco_butler.bat` file.
+In short: [download](https://github.com/cokelid/ChocoButler/archive/refs/tags/v0.1.4.zip) the files, unzip to a folder, double-click the `chocobutler.bat` file.
 
-Alternatively clone the [github repo](https://github.com/cokelid/ChocoButler.git) and run the `choco_butler.bat` file.
+Alternatively clone the [github repo](https://github.com/cokelid/ChocoButler.git) and run the `chocobutler.bat` file.
 
-To be clear, you don't need to install ChocoButler as such, just place the files in a folder, and double-click the `choco_butler.bat` file. If you don't like it, exit ChocoButler from the menu, and then delete the folder. ChocoButler makes no changes to your system (unless you use it to install updates of course).
+To be clear, you don't need to install ChocoButler as such, just place the files in a folder, and double-click the `chocobutler.bat` file. If you don't like it, exit ChocoButler from the menu, and then delete the folder. ChocoButler makes no changes to your system (unless you use it to install updates of course).
 
 You will need a recent version of Chocolatey.
 
-If you want to see ChocoButler's logging messages, either run within Powershell (by running `choco_butler.ps1`), or run the `choco_butler_visible.bat` file instead. This .bat file runs ChocoButler with a visible console window, rather than hiding the window.
+If you want to see ChocoButler's logging messages, either run within Powershell (by running `chocobutler.ps1`), or run the `chocobutler_visible.bat` file instead. This .bat file runs ChocoButler with a visible console window, rather than hiding the window.
 ### Start with Windows
-To set up ChocoButler to run every time you start Windows, copy a shortcut of the `choco_butler.bat` file to your startup folder as follows:
+To set up ChocoButler to run every time you start Windows, copy a shortcut of the `chocobutler.bat` file to your startup folder as follows:
 
 1) Open start-up folder: Press `Win+R` (to open run dialog), and type `shell:startup`
-2) Right-click on the `choco_butler.bat` file and copy, then "Paste shortcut" in the startup folder
+2) Right-click on the `chocobutler.bat` file and copy, then "Paste shortcut" in the startup folder
 
 
 ## Usage
