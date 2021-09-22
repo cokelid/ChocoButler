@@ -100,14 +100,14 @@ if ( $gui_obj.Count -gt 0 ) {
 }
 
 # Create the menu entry for opening Chocolatey GUI
-$mnuOpen = New-Object System.Windows.Forms.MenuItem 
-if ( Test-Path $gui ) {
+$mnuOpen = New-Object System.Windows.Forms.MenuItem
+if ( ($gui -ne '') -and (Test-Path $gui) ) {
     $mnuOpen.Text = "Open Chocolately GUI"
     $mnuOpen.add_Click({
         Start-Process -FilePath $gui
     })
 } Else {
-    $mnuOpen.Text = "(Chocolately GUI not installed)"
+    $mnuOpen.Text = '(Chocolately GUI not installed)'
     $mnuOpen.Enabled = $false
 }
 
