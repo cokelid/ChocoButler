@@ -1,5 +1,11 @@
 # ChocoButler Changelog
 
+## Unreleased
+
+### Changes
+* Files and names renamed for consistency prior to packaging. Previously had `choco-butler` and `choco_butler`, now changed to `chocobutler` to match the expected pacakge name.
+
+
 ## [[v0.1.4](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.4)] 2021-09-22
 Two new settings, two new Advanced menu items, new icons
 ### Added
