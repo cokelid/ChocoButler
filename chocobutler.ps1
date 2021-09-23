@@ -70,7 +70,7 @@ function check_choco_old {
     # If chocolately updates itself it can get confused. Check for this by running trivial 'choco -v' command.
     # If it's goes wrong you'll see something like:
     #         "Access to the path 'C:\ProgramData\chocolatey\choco.exe.old' is denied."
-    $res = (choco -v | Select-String 'choco.exe.old'' is denied') 
+    $res = (choco source | Select-String 'choco.exe.old'' is denied') 
     assert (-Not ($res.Count -gt 0)) "Chocolately is no longer working properly (it probably updated itself).`nDelete 'choco.exe.old' file.`nReboot is likely required :-(`nChocoButler will now exit.`n`n`n$res" "Chocolately Error"
 }
 check_choco_old
