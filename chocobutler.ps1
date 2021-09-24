@@ -56,24 +56,23 @@ $settings = load_settings
 # Check that choco is installed and it's recent
 $choco = Get-Command choco
 assert ($choco.Count -gt 0) "Cannot find a choco installation.`nEnsure 'choco.exe' is on your path.`nChocoButler will now exit." "Chocolately Not Installed"
-# Check Chocolately version. There must be a better way than parsing the whole string?
+# Check Chocolately version. Don't use -v since that's not available in all versions of choco
 assert ((choco -? | Out-String) -match '(?m)^Chocolatey v([\d\.]+)') "Requires Chocolatey Version 0.11.1 or higher. Cannot determine your version.`nChocoButler will now exit" "Chocolately Version Error"  # (?m) modifies regex for multiline match
-$choco_ver = $Matches[1]  # The pevious -match will populate $Matches if True
+$choco_ver = $Matches[1]  # The previous -match will populate $Matches if True
 assert ([System.Version]::Parse($choco_ver) -ge '0.11.1') "Requires Chocolatey Version 0.11.1 or higher.`nYou have $($Matches[0]).`nChocoButler will now exit." "Chocolately Version Error"
       
 
 
-# Check for the "choco old" problem due to presence of a choco.exe.old file.
-# This seems to occur when choco updates itself.
-# This error will prevent correct parsing of the choco command output.
-function check_choco_old {
-    # If chocolately updates itself it can get confused. Check for this by running trivial 'choco -v' command.
+function check_for_choco_old_problem {
+    # Check for the dreaded "choco.exe.old" problem...
+    # If chocolately updates itself it can start issuing warnings that prevent us from parsing choco's output correctly.
+    # Check for this by running trivial 'choco source' command.
     # If it's goes wrong you'll see something like:
     #         "Access to the path 'C:\ProgramData\chocolatey\choco.exe.old' is denied."
     $res = (choco source | Select-String 'choco.exe.old'' is denied') 
-    assert (-Not ($res.Count -gt 0)) "Chocolately is no longer working properly (it probably updated itself).`nDelete 'choco.exe.old' file.`nReboot is likely required :-(`nChocoButler will now exit.`n`n`n$res" "Chocolately Error"
+    assert (-Not ($res.Count -gt 0)) "Chocolately is no longer working properly!`n`nIt is issuing warnings that prevents ChocoButler from parsing choco's data.`nThis is probably caused by Chocolatey updating itself.`nRebooting may fix this.`nOtherwise try deleting the 'choco.exe.old' file (see warning below for details).`n`nChocoButler will now exit.`n`nWARNING:`n$($res | Out-String)" "Chocolately Error"
 }
-check_choco_old
+check_for_choco_old_problem
 
 
 
@@ -275,7 +274,7 @@ function do_upgrade {
         $objNotifyIcon.ShowBalloonTip(30000)  # Possible error so show if silent
         $mnuInstall.Enabled = $old_mnuInstall_Enabled # Restore the previous state if it didn't work
     }
-    check_choco_old
+    check_for_choco_old_problem
 
     $mnuCheck.Enabled = $true
     $timer.Start()
@@ -309,7 +308,7 @@ function check_for_outdated {
     $mnuMsg.Text = "Checking for outdated packages..."
     $mnuDate.Text = "Checking started: $($checkDate.toString())"
     Write-Host "[$($checkDate.toString())] Outdated-check started"
-    check_choco_old
+    check_for_choco_old_problem
 
     $outdated_raw = choco outdated -r --ignore-pinned  
     # Exit codes: https://docs.chocolatey.org/en-us/choco/commands/outdated#exit-codes
