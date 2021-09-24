@@ -10,6 +10,8 @@ if ((Get-Host).Version -lt '4.0') {
     Exit 1
 }
 
+Write-Host "[$((Get-Date).toString())] ChocoButler starting... [$PSScriptRoot]"
+
 # INIT outer vars (Script scope) used in functions.
 $objNotifyIcon = New-Object System.Windows.Forms.NotifyIcon
 $next_check_time = Get-Date
