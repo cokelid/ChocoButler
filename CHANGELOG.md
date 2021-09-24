@@ -1,7 +1,7 @@
 # ChocoButler Changelog
 
-## Unreleased
-
+## [[v0.1.5](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.5)] 2021-09-24
+Files renamed, improved error reporting, version displayed
 ### Added
 * New startup message that includes script path, so it's clear where it's running from.
 * New section in the README about the dreaded `choco.exe.old` problem.
@@ -47,5 +47,6 @@ Only changes to test_mode.
 
 ## [[v0.1.0](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.0)] 2021-09-13
 First Release!
+
 
 
