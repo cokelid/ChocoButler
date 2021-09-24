@@ -5,6 +5,7 @@
 ### Added
 * New startup message that includes script path, so it's clear where it's running from.
 * New section in the README about the dreaded `choco.exe.old` problem.
+* ChocoButler Version is now shown under Advanced Menu
 ### Changes
 * Files and names renamed for consistency prior to packaging. Previously had `choco-butler` and `choco_butler`, now changed to `chocobutler` to match the expected package name.
 * Improved error message when the dreaded `choco.exe.old` problem is encountered.

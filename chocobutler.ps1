@@ -1,6 +1,8 @@
 ﻿# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
 # Code taken from: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-powershell-1.0/ff730952(v=technet.10)
 
+$VERSION = 'v0.1.5-beta'
+
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
 
@@ -10,7 +12,7 @@ if ((Get-Host).Version -lt '4.0') {
     Exit 1
 }
 
-Write-Host "[$((Get-Date).toString())] ChocoButler starting... [$PSScriptRoot]"
+Write-Host "[$((Get-Date).toString())] ChocoButler $VERSION starting... [$PSScriptRoot]"
 
 # INIT outer vars (Script scope) used in functions.
 $objNotifyIcon = New-Object System.Windows.Forms.NotifyIcon
@@ -174,6 +176,11 @@ if (Test-Path $log_file_path) {
     $mnuShowLog.Enabled = $false
 }
 
+$mnuAbout = New-Object System.Windows.Forms.MenuItem
+$mnuAbout.Text = "ChocoButler $VERSION"
+$mnuAbout.Enabled = $false
+
+
 $mnuEditSettings = New-Object System.Windows.Forms.MenuItem
 $mnuEditSettings.Text = "Edit Settings file"
 $mnuEditSettings.Enabled = $true
@@ -192,6 +199,7 @@ $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuDate)
 $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuCheck)
 $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuOpen)
 $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuAdvanced)
+$mnuAdvanced.MenuItems.AddRange($mnuAbout)
 $mnuAdvanced.MenuItems.AddRange($mnuShowLog)
 $mnuAdvanced.MenuItems.AddRange($mnuEditSettings)
 $mnuAdvanced.MenuItems.AddRange($mnuShowReadme)
