@@ -1,7 +1,7 @@
 # Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
 # Code taken from: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-powershell-1.0/ff730952(v=technet.10)
 
-$VERSION = 'v0.1.6'
+$VERSION = 'v0.1.7-beta'
 
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
@@ -182,12 +182,12 @@ $mnuAbout.Enabled = $false
 
 
 $mnuEditSettings = New-Object System.Windows.Forms.MenuItem
-$mnuEditSettings.Text = "Edit Settings file"
+$mnuEditSettings.Text = "Edit ChocoButler Settings file"
 $mnuEditSettings.Enabled = $true
 $mnuEditSettings.add_Click({ Invoke-Item $settingsPath })
 
 $mnuShowReadme = New-Object System.Windows.Forms.MenuItem
-$mnuShowReadme.Text = "Open README (on web)"
+$mnuShowReadme.Text = "Open ChocoButler README (on web)"
 $mnuShowReadme.Enabled = $true
 $mnuShowReadme.add_Click({ Start-Process 'https://github.com/cokelid/ChocoButler#readme' })
 
@@ -200,9 +200,9 @@ $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuCheck)
 $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuOpen)
 $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuAdvanced)
 $mnuAdvanced.MenuItems.AddRange($mnuAbout)
-$mnuAdvanced.MenuItems.AddRange($mnuShowLog)
 $mnuAdvanced.MenuItems.AddRange($mnuEditSettings)
 $mnuAdvanced.MenuItems.AddRange($mnuShowReadme)
+$mnuAdvanced.MenuItems.AddRange($mnuShowLog)
 $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuExit)
 
 
@@ -451,6 +451,7 @@ $timer.Start()  # First check will occur in 1 minute when the timer triggers. Do
 # [System.GC]::Collect() # Help reduce memory
 $appContext = New-Object System.Windows.Forms.ApplicationContext
 [void][System.Windows.Forms.Application]::Run($appContext)
+
 
 
 
