@@ -9,7 +9,7 @@ Rather than running upgrades on a fixed schedule, ChocoButler alerts you when up
 ![ChocoButler Red Chocolatey Icon](./img/chocolatey_icon_red_48x48.png?raw=true)
 
 ## Installation & Running
-In short: [download](https://github.com/cokelid/ChocoButler/archive/refs/tags/v0.1.5.zip) the files, unzip to a folder, double-click the `chocobutler.bat` file.
+In short: [download](https://github.com/cokelid/ChocoButler/archive/refs/tags/v0.1.6.zip) the files, unzip to a folder, double-click the `chocobutler.bat` file.
 
 Alternatively clone the [github repo](https://github.com/cokelid/ChocoButler.git) and run the `chocobutler.bat` file.
 
@@ -125,6 +125,7 @@ The above changes allow you to quickly test the main check->upgrade workflow, wi
 1) Read settings changes on the fly
 1) Add option/setting to prevent the update-window from closing when complete
 1) Create a chocolatey install package for ChocoButler, so it can be installed via chocolatey
+
 
 
 

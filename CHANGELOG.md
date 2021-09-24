@@ -1,5 +1,8 @@
 # ChocoButler Changelog
 
+
+## [[v0.1.6](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.6)] 2021-09-24
+No changes beyond ensuring the version in the code matches the release (which I screwed up)
 ## [[v0.1.5](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.5)] 2021-09-24
 Files renamed, improved error reporting, version displayed
 ### Added
@@ -47,6 +50,8 @@ Only changes to test_mode.
 
 ## [[v0.1.0](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.0)] 2021-09-13
 First Release!
+
+
 
 
 
