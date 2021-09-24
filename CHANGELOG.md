@@ -2,8 +2,13 @@
 
 ## Unreleased
 
+### Added
+* New startup message that includes script path, so it's clear where it's running from.
+* New section in the README about the dreaded `choco.exe.old` problem.
 ### Changes
-* Files and names renamed for consistency prior to packaging. Previously had `choco-butler` and `choco_butler`, now changed to `chocobutler` to match the expected pacakge name.
+* Files and names renamed for consistency prior to packaging. Previously had `choco-butler` and `choco_butler`, now changed to `chocobutler` to match the expected package name.
+* Improved error message when the dreaded `choco.exe.old` problem is encountered.
+
 
 
 ## [[v0.1.4](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.4)] 2021-09-22

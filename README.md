@@ -95,6 +95,18 @@ Generally the `test_mode` setting should be left as `false`. See [Testing & Deve
 ### Apply Changes
 You must restart ChocoButler for settings changes to take effect.
 
+## The Dreaded `choco.exe.old` Problem
+Often, when Chocolatey updates itself, the `choco` command will start issuing warnings like this:
+
+ `Access to the path 'C:\ProgramData\chocolatey\choco.exe.old' is denied.`
+
+These warning messages prevent the output of `choco` from being parsed correctly.
+
+ChocoButler will check for this problem periodically, and will stop with an error message if it is encountered.
+
+Rebooting the machine and/or deleting the `choco.exe.old` file may be required to solve the problem.
+
+
 ## Testing & Development
 
 There is a built in _test mode_ to help when testing and developing the app. You can enable the _test mode_ by setting `"test_mode": true` in the `settings.json` file.
