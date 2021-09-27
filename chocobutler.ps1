@@ -13,16 +13,19 @@ if ((Get-Host).Version -lt '4.0') {
 }
 
 Write-Host "[$((Get-Date).toString())] ChocoButler $VERSION starting... [$PSScriptRoot]"
+Write-Host "[$((Get-Date).toString())] PID: $pid"
+
 
 # INIT outer vars (Script scope) used in functions.
 $objNotifyIcon = New-Object System.Windows.Forms.NotifyIcon
 $next_check_time = Get-Date
 $timer = New-Object System.Windows.Forms.Timer
 [array]$outdated = @()
+$pid_file ="$ENV:Temp\ChocoButler.pid"
 # Default settings
 $settings = [PSCustomObject]@{check_delay_hours=12; auto_install=$False; silent=$False; test_mode=$False; exit_if_no_outdated=$False; immediate_first_check=$False}
 
-function assert($condition, $message, $title) {
+function assert($condition, $message, $title, $keep_pid) {
     if (-Not $condition) {
         $timer.Stop()
         Write-Host $message
@@ -30,9 +33,41 @@ function assert($condition, $message, $title) {
         [System.Windows.Forms.MessageBox]::Show($message, $title, 'OK', 'Error')
         $objNotifyIcon.Dispose()
         $timer.Dispose()
+        if ($keep_pid -ne $true) { Remove-Item -Path $pid_file }
         if ($settings.test_mode) { Exit 1 } else { Stop-Process $pid }
     }
 }
+
+
+function pid_file_check {
+    # Check if there's already a $pid file, and if not make one
+    # This will be called every minute (by tick_check) but should be lightweight enough not to matter
+    # This PID file is used when ChocoButler gets updated.
+    if (Test-Path $pid_file) {
+        $pid_from_file = Get-Content -Path $pid_file
+        if ($pid_from_file -ne $pid) {
+            # The PID in the file doesn't match this PID?
+            # Either it's an old file OR we have two ChocoButlers running
+            $pid2 = Get-Process -Id $pid_from_file
+            if ($null -eq $pid2) {
+                # There is no such process, it must be an old .pid file. Overwrite it!
+                Write-Host "[$((Get-Date).toString())] Existing PID file contains unknown PID ($pid_from_file). Updating file. $pid_file"
+                Set-Content -Path $pid_file $pid
+            } Else {
+                # It's a Powershell process, if so assume it's another ChocoButler!
+                assert ($pid2.ProcessName -ne "powershell") "More than one ChocoButler instance is running.`nThere can be only one.`nThis instance will now Exit." "Multiple ChocoButlers" $true
+                # Must be an old file, so overwrite the existing one
+                Write-Host "[$((Get-Date).toString())] Existing PID file contains non-powershell process ($pid_from_file). Updating file. $pid_file"
+                Set-Content -Path $pid_file $pid
+            }
+        }
+    } Else {
+        # No file, so create one
+        Write-Host "[$((Get-Date).toString())] Creating PID file: $pid_file"
+        Set-Content -Path $pid_file $pid
+    }
+}
+pid_file_check  # Create a .pid file containg the process id
 
 $settingsPath = $PSScriptRoot+"\settings.json"
 function load_settings {    
@@ -151,6 +186,7 @@ $mnuExit.Text = "Exit"
 $mnuExit.add_Click({
     $objNotifyIcon.Dispose()
     $timer.Dispose()
+    Remove-Item -Path $pid_file
     if ($settings.test_mode) { Exit 1 } else { Stop-Process $pid }
 })
 
@@ -418,6 +454,7 @@ $objNotifyIcon.Visible = $true
 # This does making the timings of the checks less accurate (+- 1 minute) but that doesn't really matter.
 function tick_check {
     # This function gets called every time the timer ticks
+    pid_file_check  # Check the pid file is present and correct
     $now = Get-Date
     if ($now -gt $next_check_time) {
         $ok = check_for_outdated

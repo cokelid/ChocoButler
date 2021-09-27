@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+### Added
+* Creates a PID file containing the Process ID, to be used for package updating.
 ### Changes
 * Minor changes to Advanced menu text and ordering
 
