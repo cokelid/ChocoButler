@@ -6,6 +6,8 @@
 
 ### Added
 * Creates a PID file containing the Process ID, to be used for package updating.
+* Added an option to "repair" when the `choco.exe.old` problem is encountered.
+
 ### Changes
 * Minor changes to Advanced menu text and ordering
 

@@ -1,4 +1,4 @@
-# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
+﻿# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
 # Code taken from: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-powershell-1.0/ff730952(v=technet.10)
 
 $VERSION = 'v0.1.7-beta'
@@ -104,12 +104,27 @@ assert ([System.Version]::Parse($choco_ver) -ge '0.11.1') "Requires Chocolatey V
 
 function check_for_choco_old_problem {
     # Check for the dreaded "choco.exe.old" problem...
-    # If chocolately updates itself it can start issuing warnings that prevent us from parsing choco's output correctly.
+    # If chocolately updates itself it can start issuing errorts/warnings that prevent us from parsing choco's output correctly.
     # Check for this by running trivial 'choco source' command.
     # If it's goes wrong you'll see something like:
     #         "Access to the path 'C:\ProgramData\chocolatey\choco.exe.old' is denied."
-    $res = (choco source | Select-String 'choco.exe.old'' is denied') 
-    assert (-Not ($res.Count -gt 0)) "Chocolately is no longer working properly!`n`nIt is issuing warnings that prevents ChocoButler from parsing choco's data.`nThis is probably caused by Chocolatey updating itself.`nRebooting may fix this.`nOtherwise try deleting the 'choco.exe.old' file (see warning below for details).`n`nChocoButler will now exit.`n`nWARNING:`n$($res | Out-String)" "Chocolately Error"
+    # Here choco is trying to delete the old .exe file but can't, so run choco as admin to give it the permissions it needs.
+    $res = (choco source | Select-String 'choco.exe.old'' is denied')
+    if ($res.Count -gt 0){
+        $choco_exe_old = Get-Command 'choco.exe.old'
+        if ($choco_exe_old.Count -gt 0) {
+            $msg = "Chocolatey has encountered the dreaded 'choco.exe.old' error.`nClick Yes to attempt repair...."
+            $btn =  [System.Windows.Forms.MessageBox]::Show($msg, 'Repair Chocolatey?', 'YesNo', 'Question')
+            if ($btn -eq 'Yes') {
+                # Here we run a trivial choco command with elevated permissions, to allow choco itself to delete the errant file...
+                $proc = (Start-Process -FilePath "choco" -Verb RunAs -Wait -PassThru -ArgumentList "source")
+                # Did it work?
+                $res = (choco source | Select-String 'choco.exe.old'' is denied')
+            }
+        }
+        
+    }
+    assert (-Not ($res.Count -gt 0)) "Chocolately is no longer working properly!`n`nIt is issuing warnings that prevents ChocoButler from parsing choco's data.`nThis is caused by Chocolatey updating itself.`nTry deleting the 'choco.exe.old' file as admin (see warning below for details).`n`nChocoButler will now exit.`n`nWARNING:`n$($res | Out-String)" "Chocolately Error"
 }
 check_for_choco_old_problem
 

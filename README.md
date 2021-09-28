@@ -95,16 +95,19 @@ Generally the `test_mode` setting should be left as `false`. See [Testing & Deve
 ### Apply Changes
 You must restart ChocoButler for settings changes to take effect.
 
+
+
 ## The Dreaded `choco.exe.old` Problem
-Often, when Chocolatey updates itself, the `choco` command will start issuing warnings like this:
+Often, when Chocolatey updates itself, the `choco` command will start issuing errors/warnings like this:
 
  `Access to the path 'C:\ProgramData\chocolatey\choco.exe.old' is denied.`
 
 These warning messages prevent the output of `choco` from being parsed correctly.
 
-ChocoButler will check for this problem periodically, and will stop with an error message if it is encountered.
+The problem occurs when Chocolatey is trying to delete the old .exe file, but is unable to do so. This can generally be fixed by running `choco` as admin.
 
-Rebooting the machine and/or deleting the `choco.exe.old` file may be required to solve the problem.
+ChocoButler will check for this problem periodically, and if encountered gives the option to "repair". The repair option simply runs `choco` as admin to allow it to fix itself.
+
 
 
 ## Testing & Development
