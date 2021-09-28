@@ -78,8 +78,10 @@ function load_settings {
     # Ensure $s has same settings (Properties) as existing $settings
     Foreach ($k in $settings.PSObject.Properties.Name) {
         if (-Not(Get-Member -InputObject $s -Name $k)) {
-            Write-Host "[$((Get-Date).toString())] No entry for ""$k"" found in settings file. Using default: $($settings.($k))"
+            Write-Host "[$((Get-Date).toString())] No entry for ""$k"" found in settings file. Adding to settings.json with default: $($settings.($k))"
             $s | Add-Member -NotePropertyName $k -NotePropertyValue $settings.($k)
+            # Write out the new settings file, this may be repetative for multiple new settings but meh
+            $s | ConvertTo-Json | Set-Content -Path $settingsPath
         }
     }
     Foreach ($k in $s.PSObject.Properties.Name) {
