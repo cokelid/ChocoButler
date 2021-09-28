@@ -119,12 +119,11 @@ function check_for_choco_old_problem {
             $btn =  [System.Windows.Forms.MessageBox]::Show($msg, 'Repair Chocolatey?', 'YesNo', 'Question')
             if ($btn -eq 'Yes') {
                 # Here we run a trivial choco command with elevated permissions, to allow choco itself to delete the errant file...
-                $proc = (Start-Process -FilePath "choco" -Verb RunAs -Wait -PassThru -ArgumentList "source")
+                Start-Process -FilePath "choco" -ArgumentList "source" -Verb RunAs -Wait
                 # Did it work?
                 $res = (choco source | Select-String 'choco.exe.old'' is denied')
             }
         }
-        
     }
     assert (-Not ($res.Count -gt 0)) "Chocolately is no longer working properly!`n`nIt is issuing warnings that prevents ChocoButler from parsing choco's data.`nThis is caused by Chocolatey updating itself.`nTry deleting the 'choco.exe.old' file as admin (see warning below for details).`n`nChocoButler will now exit.`n`nWARNING:`n$($res | Out-String)" "Chocolately Error"
 }
