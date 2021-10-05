@@ -1,15 +1,14 @@
 # ChocoButler Changelog
 
 
-
-
 ## Unreleased
 
 ### Added
 * Added packageSourceUrl to nuspec
 * Added releaseNotes to nuspec
-* 
 ### Changes
+* More consistent temp-dir identification (for PID file) in Windows Server 2012 R2 (and elsewhere)
+* Create startup-shortcut with chocolatey's own Install-ChocolateyShortcut command, complete with nice icon
 
 ## [[v0.1.7](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.7)] 2021-10-05
 Allow ChocoButler to update itself via package. Repair choco.exe.old problem.

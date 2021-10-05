@@ -1,7 +1,7 @@
-# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
+﻿# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
 # Code taken from: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-powershell-1.0/ff730952(v=technet.10)
 
-$VERSION = 'v0.1.7'
+$VERSION = 'v0.1.8-beta'
 
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
@@ -21,7 +21,19 @@ $objNotifyIcon = New-Object System.Windows.Forms.NotifyIcon
 $next_check_time = Get-Date
 $timer = New-Object System.Windows.Forms.Timer
 [array]$outdated = @()
-$pid_file ="$ENV:Temp\ChocoButler.pid"
+
+# When chocolately installs on Windows 2012 the $ENV:Temp can include a "chocolately" subdir, but not when started normally?!
+# So do something hacky to try and handle this
+$tmp1 = (Get-Item -force $ENV:Temp).FullName # Convert C:\Users\ADMINI~1\AppData\Local\Temp TO C:\Users\Administrator\AppData\Local\Temp
+$tmp2 = (Get-Item -force "$ENV:userprofile\AppData\Local\Temp").FullName
+if ($tmp1.Contains($tmp2) -and ($tmp1.Length -gt $tmp2.Length)) {
+    # This is the 2012 style we're seeing where $ENV:Temp = C:\Users\Administrator\AppData\Local\Temp\1\chocolatey
+    $pid_dir = $tmp2
+} else {
+    $pid_dir = $tmp1
+}
+$pid_file ="$pid_dir\ChocoButler.pid"
+
 # Default settings
 $settings = [PSCustomObject]@{check_delay_hours=12; auto_install=$False; silent=$False; test_mode=$False; exit_if_no_outdated=$False; immediate_first_check=$False}
 
@@ -540,6 +552,7 @@ $timer.Start()  # First check will occur in 1 minute when the timer triggers. Do
 # [System.GC]::Collect() # Help reduce memory
 $appContext = New-Object System.Windows.Forms.ApplicationContext
 [void][System.Windows.Forms.Application]::Run($appContext)
+
 
 
 
