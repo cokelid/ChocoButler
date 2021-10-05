@@ -2,8 +2,8 @@
 
 
 
-## Unreleased
-
+## [[v0.1.7](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.7)] 2021-10-05
+Allow chocobutler to update itself via package. Repair choco.exe.old problem
 ### Added
 * Creates a PID file containing the Process ID, to be used for package updating.
 * Added an option to "repair" when the `choco.exe.old` problem is encountered.
@@ -65,6 +65,7 @@ Only changes to test_mode.
 
 ## [[v0.1.0](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.0)] 2021-09-13
 First Release!
+
 
 
 
