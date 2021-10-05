@@ -1,7 +1,7 @@
-﻿# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
+# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
 # Code taken from: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-powershell-1.0/ff730952(v=technet.10)
 
-$VERSION = 'v0.1.8-beta'
+$VERSION = 'v0.1.8'
 
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
@@ -552,6 +552,7 @@ $timer.Start()  # First check will occur in 1 minute when the timer triggers. Do
 # [System.GC]::Collect() # Help reduce memory
 $appContext = New-Object System.Windows.Forms.ApplicationContext
 [void][System.Windows.Forms.Application]::Run($appContext)
+
 
 
 

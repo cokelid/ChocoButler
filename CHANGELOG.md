@@ -1,8 +1,8 @@
 # ChocoButler Changelog
 
 
-## Unreleased
-
+## [[v0.1.8](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.8)] 2021-10-05
+Improvements for chocolatey packaging and more stable with Windows Server 2012
 ### Added
 * Added packageSourceUrl to nuspec
 * Added releaseNotes to nuspec
@@ -73,6 +73,7 @@ Only changes to test_mode.
 
 ## [[v0.1.0](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.0)] 2021-09-13
 First Release!
+
 
 
 
