@@ -1,4 +1,4 @@
-# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
+﻿# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
 # Code taken from: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-powershell-1.0/ff730952(v=technet.10)
 
 $VERSION = 'v0.1.7-beta'
@@ -78,8 +78,10 @@ function load_settings {
     # Ensure $s has same settings (Properties) as existing $settings
     Foreach ($k in $settings.PSObject.Properties.Name) {
         if (-Not(Get-Member -InputObject $s -Name $k)) {
-            Write-Host "[$((Get-Date).toString())] No entry for ""$k"" found in settings file. Using default: $($settings.($k))"
+            Write-Host "[$((Get-Date).toString())] No entry for ""$k"" found in settings file. Adding to settings.json with default: $($settings.($k))"
             $s | Add-Member -NotePropertyName $k -NotePropertyValue $settings.($k)
+            # Write out the new settings file, this may be repetative for multiple new settings but meh
+            $s | ConvertTo-Json | Set-Content -Path $settingsPath
         }
     }
     Foreach ($k in $s.PSObject.Properties.Name) {
@@ -104,12 +106,26 @@ assert ([System.Version]::Parse($choco_ver) -ge '0.11.1') "Requires Chocolatey V
 
 function check_for_choco_old_problem {
     # Check for the dreaded "choco.exe.old" problem...
-    # If chocolately updates itself it can start issuing warnings that prevent us from parsing choco's output correctly.
+    # If chocolately updates itself it can start issuing errorts/warnings that prevent us from parsing choco's output correctly.
     # Check for this by running trivial 'choco source' command.
     # If it's goes wrong you'll see something like:
     #         "Access to the path 'C:\ProgramData\chocolatey\choco.exe.old' is denied."
-    $res = (choco source | Select-String 'choco.exe.old'' is denied') 
-    assert (-Not ($res.Count -gt 0)) "Chocolately is no longer working properly!`n`nIt is issuing warnings that prevents ChocoButler from parsing choco's data.`nThis is probably caused by Chocolatey updating itself.`nRebooting may fix this.`nOtherwise try deleting the 'choco.exe.old' file (see warning below for details).`n`nChocoButler will now exit.`n`nWARNING:`n$($res | Out-String)" "Chocolately Error"
+    # Here choco is trying to delete the old .exe file but can't, so run choco as admin to give it the permissions it needs.
+    $res = (choco source | Select-String 'choco.exe.old'' is denied')
+    if ($res.Count -gt 0){
+        $choco_exe_old = Get-Command 'choco.exe.old'
+        if ($choco_exe_old.Count -gt 0) {
+            $msg = "Chocolatey has encountered the dreaded 'choco.exe.old' error.`nClick Yes to attempt repair...."
+            $btn =  [System.Windows.Forms.MessageBox]::Show($msg, 'Repair Chocolatey?', 'YesNo', 'Question')
+            if ($btn -eq 'Yes') {
+                # Here we run a trivial choco command with elevated permissions, to allow choco itself to delete the errant file...
+                Start-Process -FilePath "choco" -ArgumentList "source" -Verb RunAs -Wait
+                # Did it work?
+                $res = (choco source | Select-String 'choco.exe.old'' is denied')
+            }
+        }
+    }
+    assert (-Not ($res.Count -gt 0)) "Chocolately is no longer working properly!`n`nIt is issuing warnings that prevents ChocoButler from parsing choco's data.`nThis is caused by Chocolatey updating itself.`nTry deleting the 'choco.exe.old' file as admin (see warning below for details).`n`nChocoButler will now exit.`n`nWARNING:`n$($res | Out-String)" "Chocolately Error"
 }
 check_for_choco_old_problem
 
@@ -228,19 +244,29 @@ $mnuShowReadme.Enabled = $true
 $mnuShowReadme.add_Click({ Start-Process 'https://github.com/cokelid/ChocoButler#readme' })
 
 $context_menu = New-Object System.Windows.Forms.ContextMenu
-$objNotifyIcon.ContextMenu = $context_menu
-$objNotifyIcon.contextMenu.MenuItems.AddRange($mnuInstall)
-$objNotifyIcon.contextMenu.MenuItems.AddRange($mnuMsg)
-$objNotifyIcon.contextMenu.MenuItems.AddRange($mnuDate)
-$objNotifyIcon.contextMenu.MenuItems.AddRange($mnuCheck)
-$objNotifyIcon.contextMenu.MenuItems.AddRange($mnuOpen)
-$objNotifyIcon.contextMenu.MenuItems.AddRange($mnuAdvanced)
-$mnuAdvanced.MenuItems.AddRange($mnuAbout)
-$mnuAdvanced.MenuItems.AddRange($mnuEditSettings)
-$mnuAdvanced.MenuItems.AddRange($mnuShowReadme)
-$mnuAdvanced.MenuItems.AddRange($mnuShowLog)
-$objNotifyIcon.contextMenu.MenuItems.AddRange($mnuExit)
 
+function build_menus {
+    $objNotifyIcon.ContextMenu = $context_menu
+    $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuInstall)
+    $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuMsg)
+    $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuDate)
+    $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuCheck)
+    $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuOpen)
+    $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuAdvanced)
+    $mnuAdvanced.MenuItems.AddRange($mnuAbout)
+    $mnuAdvanced.MenuItems.AddRange($mnuEditSettings)
+    $mnuAdvanced.MenuItems.AddRange($mnuShowReadme)
+    $mnuAdvanced.MenuItems.AddRange($mnuShowLog)
+    $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuExit)
+}
+build_menus
+
+function show_icon {
+    # Use this if we have to create a new icon after choconutler updates itself
+    $objNotifyIcon.Icon = $icon
+    $objNotifyIcon.Text = "ChocoButler"
+    $objNotifyIcon.Visible = $true
+}
 
 
 function do_upgrade {
@@ -250,6 +276,23 @@ function do_upgrade {
     $mnuCheck.Enabled = $false
     $objNotifyIcon.Text = "ChocoButler`nUpgrading Packages..."
     $mnuMsg.Text = "Upgrading $($outdated.Count) packages..."
+    
+    if ($outdated.name -contains 'chocobutler') {
+        Write-Host "[$((Get-Date).toString())] NOTE: Upgrade list contains ChocoButler itself... Killing icon and upgrading chocobutler last of all."
+        $do_chocobutler_upgrade = $true
+        # Since we're updating chocobutler, we need to kill the system tray icon since we'll be starting a new process
+        # and ensure that chocobutler is updated last of all
+        for ($i=0; $i -le $outdated.Length-1; $i++) {
+            if ($outdated[$i].name -eq 'chocobutler') {$so = ($outdated.Length+100)} else {$so = $i}
+            # Add sort-order
+            Add-Member -InputObject $outdated[$i] -NotePropertyName "sort_order" -NotePropertyValue $so
+        }
+        $outdated = ($outdated | Sort-Object -Property sort_order)  # Sort chocobutler last
+        # Kill system tray icon before we update chocobutler
+        $objNotifyIcon.Dispose()
+    } else {
+        $do_chocobutler_upgrade = $false
+    }
 
     $outdated_packages = $outdated.name -join ' '  # Space-separated list of packages
     $upgradeStart = Get-Date
@@ -276,8 +319,17 @@ function do_upgrade {
         Write-Host $_.ScriptStackTrace
         $exitCode = -1
     }
+    if ($do_chocobutler_upgrade) {
+        # We shouldn't really ever get here, since during the chocobutler upgrade, the current process should have been killed.
+        # BUT if the upgrade fails, or user didn't click Yes, and we're still alive, recreate the $objNotifyIcon
+        $objNotifyIcon = New-Object System.Windows.Forms.NotifyIcon
+        Set-Variable -Name "objNotifyIcon" -Value $objNotifyIcon -Scope Script
+        build_menus
+        show_icon
+    }
+
     $upgradeEnd = Get-Date
-    Write-Host "[$($upgradeEnd.toString())] Upgrade ended with Exit Code: $exitCode"
+    Write-Host "[$($upgradeEnd.toString())] Upgrade ended with Exit Code: $exitCode. (0 is good!)"
     $mnuDate.Text = "Upgrade ended: $($upgradeEnd.toString())"
     $objNotifyIcon.Text = "ChocoButler"
     if ($exitCode -eq 0) {  

@@ -86,8 +86,8 @@ By default, ChocoButler waits 1 minute before doing its first outdated-check; th
 ### `auto_install`
 By default, ChocoButler will alert you to available updates, and you then start the installation process (from the system tray icon) at a convenient time. This way you don't upgrade Zoom in the middle of a video meeting, say. However if you want the upgrade installation to occur automatically, and as soon as outdated packages are available, you can change the `auto_install` setting to `true`.
 
-Even with auto_install turned on, you'll probably still need to click a box to allow choco to make changes, and these requests could pop up at any time (and so could be annoying).
-To avoid this, you could run the whole Powershell script as Admin, then you won't get prompted (but this is probably not a great idea from a security point of view). Overall ChocoButler was not built for fully automated updates, so this will seem a bit clunky.
+Even with `auto_install` turned on, you'll probably still need to click a box to allow choco to make changes, and these requests could pop up at any time (and so could be annoying).
+To avoid this, you could run the whole Powershell script as Admin, then you won't get prompted, but this is probably not a great idea from a security point of view. Overall ChocoButler was not built for fully automated updates, so this will likely be clunky.
 
 ### `test_mode`
 Generally the `test_mode` setting should be left as `false`. See [Testing & Development](#testing--development) below for more details.
@@ -95,16 +95,19 @@ Generally the `test_mode` setting should be left as `false`. See [Testing & Deve
 ### Apply Changes
 You must restart ChocoButler for settings changes to take effect.
 
+
+
 ## The Dreaded `choco.exe.old` Problem
-Often, when Chocolatey updates itself, the `choco` command will start issuing warnings like this:
+Often, when Chocolatey updates itself, the `choco` command will start issuing errors/warnings like this:
 
  `Access to the path 'C:\ProgramData\chocolatey\choco.exe.old' is denied.`
 
 These warning messages prevent the output of `choco` from being parsed correctly.
 
-ChocoButler will check for this problem periodically, and will stop with an error message if it is encountered.
+The problem occurs when Chocolatey is trying to delete an old .exe file from a previous version, but is unable to do so. This can generally be fixed by running `choco` as admin.
 
-Rebooting the machine and/or deleting the `choco.exe.old` file may be required to solve the problem.
+ChocoButler will check for this problem periodically, and if encountered gives the option to "repair". The repair option simply runs `choco` as admin to allow it to fix itself.
+
 
 
 ## Testing & Development

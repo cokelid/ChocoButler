@@ -6,13 +6,20 @@
 
 ### Added
 * Creates a PID file containing the Process ID, to be used for package updating.
+* Added an option to "repair" when the `choco.exe.old` problem is encountered.
+* Missing settings are now automatically added to the `settings.json` file with the default value.
 ### Changes
 * Minor changes to Advanced menu text and ordering
+* When updating ChocoButler itself do so tidily: ensure we remove the system tray icon and update ChocoButler last
+
 
 ## [[v0.1.6](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.6)] 2021-09-24
 No changes beyond ensuring the version in the code matches the release (which I screwed up)
+
+
 ## [[v0.1.5](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.5)] 2021-09-24
 Files renamed, improved error reporting, version displayed
+
 ### Added
 * New startup message that includes script path, so it's clear where it's running from.
 * New section in the README about the dreaded `choco.exe.old` problem.
