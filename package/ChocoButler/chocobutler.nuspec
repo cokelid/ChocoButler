@@ -38,17 +38,16 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
     <authors>cokelid</authors>
     <!-- projectUrl is required for the community feed -->
     <projectUrl>https://github.com/cokelid/ChocoButler</projectUrl>
-    <!-- There are a number of CDN Services that can be used for hosting the Icon for a package. More information can be found here: https://docs.chocolatey.org/en-us/create/create-packages#package-icon-guidelines -->
-    <!-- Here is an example using Githack -->
     <iconUrl>https://rawcdn.githack.com/cokelid/ChocoButler/79c619419346ca733cb001bacaab929fd41fa9cc/img/chocolatey_icon_red_256x256.png</iconUrl>
-    <!-- <copyright>Year Software Vendor</copyright> -->
     <!-- If there is a license Url available, it is required for the community feed -->
     <licenseUrl>https://github.com/cokelid/ChocoButler/blob/main/LICENCE</licenseUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <projectSourceUrl>https://github.com/cokelid/ChocoButler</projectSourceUrl>
+    <packageSourceUrl>https://github.com/cokelid/ChocoButler/tree/main/package/ChocoButler</packageSourceUrl>
+    <releaseNotes>Allow ChocoButler to update itself via package. Repair choco.exe.old problem.<releaseNotes>
     <docsUrl>https://github.com/cokelid/ChocoButler#readme</docsUrl>
     <bugTrackerUrl>https://github.com/cokelid/ChocoButler/issues</bugTrackerUrl>
-    <tags>choco-butler ChocoButler Chocolatey choco chocolatey-automatic</tags>
+    <tags>ChocoButler Chocolatey choco chocolatey-automatic</tags>
     <summary>ChocoButler - An automatic package upgrader for Chocolatey</summary>
     <description>ChocoButler is a small app that works with [Chocolatey](https://chocolatey.org/), periodically checking for outdated packages, and allowing them to be upgraded. ChocoButler sits in the system tray (i.e. notification area) of Windows. Its icon changes colour and an alert pops-up when upgrades are available.</description>
     <!-- =============================== -->
