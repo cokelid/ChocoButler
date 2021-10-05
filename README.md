@@ -9,7 +9,7 @@ Rather than running upgrades on a fixed schedule, ChocoButler alerts you when up
 ![ChocoButler Red Chocolatey Icon](./img/chocolatey_icon_red_48x48.png?raw=true)
 
 ## Installation & Running
-In short: [download](https://github.com/cokelid/ChocoButler/archive/refs/tags/v0.1.6.zip) the files, unzip to a folder, double-click the `chocobutler.bat` file.
+In short: [download](https://github.com/cokelid/ChocoButler/archive/refs/tags/v0.1.7.zip) the files, unzip to a folder, double-click the `chocobutler.bat` file.
 
 Alternatively clone the [github repo](https://github.com/cokelid/ChocoButler.git) and run the `chocobutler.bat` file.
 
@@ -122,6 +122,7 @@ The test_mode leads to four changes in behaviour:
 4) On exit, `Exit` is called rather than `Stop-Process`. This is less likely to kill your IDE. YMMV.
 
 The above changes allow you to quickly test the main check->upgrade workflow, without having to wait for an actual outdated packages to appear.
+
 
 
 
