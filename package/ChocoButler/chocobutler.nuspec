@@ -44,7 +44,7 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <projectSourceUrl>https://github.com/cokelid/ChocoButler</projectSourceUrl>
     <packageSourceUrl>https://github.com/cokelid/ChocoButler/tree/main/package/ChocoButler</packageSourceUrl>
-    <releaseNotes>Allow ChocoButler to update itself via package. Repair choco.exe.old problem.<releaseNotes>
+    <releaseNotes>Allow ChocoButler to update itself via package. Repair choco.exe.old problem.</releaseNotes>
     <docsUrl>https://github.com/cokelid/ChocoButler#readme</docsUrl>
     <bugTrackerUrl>https://github.com/cokelid/ChocoButler/issues</bugTrackerUrl>
     <tags>ChocoButler Chocolatey choco chocolatey-automatic</tags>
