@@ -10,6 +10,7 @@
 * Missing settings are now automatically added to the `settings.json` file with the default value.
 ### Changes
 * Minor changes to Advanced menu text and ordering
+* When updating ChocoButler itself do so tidily: ensure we remove the system tray icon and update ChocoButler last
 
 
 ## [[v0.1.6](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.6)] 2021-09-24

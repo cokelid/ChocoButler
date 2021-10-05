@@ -244,19 +244,29 @@ $mnuShowReadme.Enabled = $true
 $mnuShowReadme.add_Click({ Start-Process 'https://github.com/cokelid/ChocoButler#readme' })
 
 $context_menu = New-Object System.Windows.Forms.ContextMenu
-$objNotifyIcon.ContextMenu = $context_menu
-$objNotifyIcon.contextMenu.MenuItems.AddRange($mnuInstall)
-$objNotifyIcon.contextMenu.MenuItems.AddRange($mnuMsg)
-$objNotifyIcon.contextMenu.MenuItems.AddRange($mnuDate)
-$objNotifyIcon.contextMenu.MenuItems.AddRange($mnuCheck)
-$objNotifyIcon.contextMenu.MenuItems.AddRange($mnuOpen)
-$objNotifyIcon.contextMenu.MenuItems.AddRange($mnuAdvanced)
-$mnuAdvanced.MenuItems.AddRange($mnuAbout)
-$mnuAdvanced.MenuItems.AddRange($mnuEditSettings)
-$mnuAdvanced.MenuItems.AddRange($mnuShowReadme)
-$mnuAdvanced.MenuItems.AddRange($mnuShowLog)
-$objNotifyIcon.contextMenu.MenuItems.AddRange($mnuExit)
 
+function build_menus {
+    $objNotifyIcon.ContextMenu = $context_menu
+    $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuInstall)
+    $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuMsg)
+    $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuDate)
+    $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuCheck)
+    $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuOpen)
+    $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuAdvanced)
+    $mnuAdvanced.MenuItems.AddRange($mnuAbout)
+    $mnuAdvanced.MenuItems.AddRange($mnuEditSettings)
+    $mnuAdvanced.MenuItems.AddRange($mnuShowReadme)
+    $mnuAdvanced.MenuItems.AddRange($mnuShowLog)
+    $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuExit)
+}
+build_menus
+
+function show_icon {
+    # Use this if we have to create a new icon after choconutler updates itself
+    $objNotifyIcon.Icon = $icon
+    $objNotifyIcon.Text = "ChocoButler"
+    $objNotifyIcon.Visible = $true
+}
 
 
 function do_upgrade {
@@ -266,6 +276,23 @@ function do_upgrade {
     $mnuCheck.Enabled = $false
     $objNotifyIcon.Text = "ChocoButler`nUpgrading Packages..."
     $mnuMsg.Text = "Upgrading $($outdated.Count) packages..."
+    
+    if ($outdated.name -contains 'chocobutler') {
+        Write-Host "[$((Get-Date).toString())] NOTE: Upgrade list contains ChocoButler itself... Killing icon and upgrading chocobutler last of all."
+        $do_chocobutler_upgrade = $true
+        # Since we're updating chocobutler, we need to kill the system tray icon since we'll be starting a new process
+        # and ensure that chocobutler is updated last of all
+        for ($i=0; $i -le $outdated.Length-1; $i++) {
+            if ($outdated[$i].name -eq 'chocobutler') {$so = ($outdated.Length+100)} else {$so = $i}
+            # Add sort-order
+            Add-Member -InputObject $outdated[$i] -NotePropertyName "sort_order" -NotePropertyValue $so
+        }
+        $outdated = ($outdated | Sort-Object -Property sort_order)  # Sort chocobutler last
+        # Kill system tray icon before we update chocobutler
+        $objNotifyIcon.Dispose()
+    } else {
+        $do_chocobutler_upgrade = $false
+    }
 
     $outdated_packages = $outdated.name -join ' '  # Space-separated list of packages
     $upgradeStart = Get-Date
@@ -292,8 +319,17 @@ function do_upgrade {
         Write-Host $_.ScriptStackTrace
         $exitCode = -1
     }
+    if ($do_chocobutler_upgrade) {
+        # We shouldn't really ever get here, since during the chocobutler upgrade, the current process should have been killed.
+        # BUT if the upgrade fails, or user didn't click Yes, and we're still alive, recreate the $objNotifyIcon
+        $objNotifyIcon = New-Object System.Windows.Forms.NotifyIcon
+        Set-Variable -Name "objNotifyIcon" -Value $objNotifyIcon -Scope Script
+        build_menus
+        show_icon
+    }
+
     $upgradeEnd = Get-Date
-    Write-Host "[$($upgradeEnd.toString())] Upgrade ended with Exit Code: $exitCode"
+    Write-Host "[$($upgradeEnd.toString())] Upgrade ended with Exit Code: $exitCode. (0 is good!)"
     $mnuDate.Text = "Upgrade ended: $($upgradeEnd.toString())"
     $objNotifyIcon.Text = "ChocoButler"
     if ($exitCode -eq 0) {  
