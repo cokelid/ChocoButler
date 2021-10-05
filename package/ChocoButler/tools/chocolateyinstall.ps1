@@ -11,7 +11,7 @@ Install-BinFile -Name $batName -Path $batPath
 
 # Create short-cut to shim in startup
 $startupDir = [Environment]::GetFolderPath('Startup')
-$iconPath =  "$($env:ChocolateyInstall)\lib\chocobutler\chocolatey_red.ico"
+$iconPath =  "$($env:ChocolateyInstall)\lib\chocobutler\tools\chocolatey_red.ico"
 $shim = Get-Command "$batName.exe"
 $shortcutPath = "$startupDir\ChocoButler.lnk"
 Install-ChocolateyShortcut -ShortcutFilePath $shortcutPath -TargetPath $shim.Path -Description "ChocoButler" -IconLocation $iconPath -WindowStyle 0
