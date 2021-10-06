@@ -1,8 +1,0 @@
-﻿{
-    "check_delay_hours": 12,
-    "auto_install": false,
-    "silent": false,
-    "exit_if_no_outdated": false,
-    "immediate_first_check": false,
-    "test_mode": false
-}

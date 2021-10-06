@@ -1,7 +1,7 @@
-# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
+﻿# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
 # Code taken from: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-powershell-1.0/ff730952(v=technet.10)
 
-$VERSION = 'v0.1.8'
+$VERSION = 'v0.1.9-beta'
 
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
@@ -82,8 +82,12 @@ function pid_file_check {
 pid_file_check  # Create a .pid file containg the process id
 
 $settingsPath = $PSScriptRoot+"\settings.json"
-function load_settings {    
-    assert (Test-Path $settingsPath) "Cannot find settings.json file:`n$($settingsPath)`nChocoButler will now exit." "ChocoButler Settings Error"
+function load_settings {
+    if (-Not(Test-Path $settingsPath)) {
+        Write-Host "[$((Get-Date).toString())] No settings.json file found (at $settingsPath). Creating one..."
+        $settings | ConvertTo-Json | Set-Content -Path $settingsPath
+    }    
+    assert (Test-Path $settingsPath) "Cannot find/create settings.json file:`n$($settingsPath)`nChocoButler will now exit." "ChocoButler Settings Error"
     $s = Get-Content -Raw -Path $settingsPath | ConvertFrom-Json  # Will not fail if file missing
     $ok = ($s -is [System.Object])
     assert $ok "Cannot load settings.json file. Syntax Error?:`n$($settingsPath)`nChocoButler will now exit." "ChocoButler Settings Error"
@@ -552,6 +556,9 @@ $timer.Start()  # First check will occur in 1 minute when the timer triggers. Do
 # [System.GC]::Collect() # Help reduce memory
 $appContext = New-Object System.Windows.Forms.ApplicationContext
 [void][System.Windows.Forms.Application]::Run($appContext)
+
+
+
 
 
 

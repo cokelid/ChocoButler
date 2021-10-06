@@ -1,6 +1,12 @@
 # ChocoButler Changelog
 
 
+## Unreleased
+
+### Added
+*
+### Changes
+* Settings file no longer included in package/repo. If it doesn't exist then create it as default. This helps with upgrading.
 ## [[v0.1.8](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.8)] 2021-10-05
 Improvements for chocolatey packaging and more stable with Windows Server 2012
 ### Added
@@ -73,6 +79,7 @@ Only changes to test_mode.
 
 ## [[v0.1.0](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.0)] 2021-09-13
 First Release!
+
 
 
 
