@@ -1,7 +1,7 @@
 ﻿# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
 # Code taken from: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-powershell-1.0/ff730952(v=technet.10)
 
-$VERSION = 'v0.1.9-beta'
+$VERSION = 'v1.0.0-beta'
 
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
@@ -398,31 +398,37 @@ function do_upgrade {
         If ($exitCode -eq 1641) {
             $msg = "Upgrade successful. Reboot Initiated..."
             $type = "Warning"
+            $mnuInstall.Enabled = $false
         } ElseIf ($exitCode -eq 3010) {
             $msg = "Upgrade successful. Reboot Required..."
             $type = "Warning"
+            $mnuInstall.Enabled = $false
         } ElseIf ($exitCode -eq 350) {
             $msg = "Upgrade successful. Exit code 350. Pending reboot detected, no action has occurred."
             $type = "Warning"
+            $mnuInstall.Enabled = $false
         } ElseIf ($exitCode -eq 1604) {
             $msg = "Upgrade error. Exit code 1604: Install suspended, incomplete."
             $type = "Error"
+            $mnuInstall.Enabled = $false
         } ElseIf ($exitCode -eq -999) {
             $msg = "User cancelled upgrade. Admin rights required!"
             $type = "Error"
+            $mnuInstall.Enabled = $old_mnuInstall_Enabled # Restore the previous state if it didn't work
         } ElseIf ($exitCode -eq -1) {
             $msg = "Error occurred during upgrade. Update manually. (Exit code -1)"
             $type = "Error"
+            $mnuInstall.Enabled = $false
         } Else {
             $msg = "Unknown error occurred. Exit code: $exitCode`n$($_.Exception)`nSee Log File for details"
             $type = "Error"
+            $mnuInstall.Enabled = $false
         }
         $mnuMsg.Text = $msg
         $objNotifyIcon.BalloonTipIcon = $type # Should be one of: None, Info, Warning, Error  
         $objNotifyIcon.BalloonTipText = $msg
         $objNotifyIcon.BalloonTipTitle = "Chocolately Upgrade (ChocoButler)" 
         $objNotifyIcon.ShowBalloonTip(30000)  # Possible error so show if silent
-        $mnuInstall.Enabled = $old_mnuInstall_Enabled # Restore the previous state if it didn't work
     }
     check_for_choco_old_problem
 
