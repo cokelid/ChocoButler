@@ -227,13 +227,13 @@ $mnuAdvanced.Text = "Advanced"
 $mnuAdvanced.Enabled = $true
 
 $mnuShowLog = New-Object System.Windows.Forms.MenuItem
-$log_file_path = 'C:\ProgramData\chocolatey\logs\chocolatey.log'  # Is there a way to discover this?
+$log_file_path = "$env:ProgramData\chocolatey\logs\chocolatey.log"
 if (Test-Path $log_file_path) {
     $mnuShowLog.Text = "Open Chocolatey log file"
     $mnuShowLog.Enabled = $true
     $mnuShowLog.add_Click({ Invoke-Item $log_file_path })
 } Else {
-    $mnuShowLog.Text = "(Log file not found?)"
+    $mnuShowLog.Text = "(Chocolatey Log file not found?)"
     $mnuShowLog.Enabled = $false
 }
 
