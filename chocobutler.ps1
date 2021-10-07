@@ -229,7 +229,7 @@ $mnuAdvanced.Enabled = $true
 $mnuShowLog = New-Object System.Windows.Forms.MenuItem
 $log_file_path = 'C:\ProgramData\chocolatey\logs\chocolatey.log'  # Is there a way to discover this?
 if (Test-Path $log_file_path) {
-    $mnuShowLog.Text = "Show Chocolatey log file"
+    $mnuShowLog.Text = "Open Chocolatey log file"
     $mnuShowLog.Enabled = $true
     $mnuShowLog.add_Click({ Invoke-Item $log_file_path })
 } Else {
