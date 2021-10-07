@@ -585,6 +585,7 @@ if ($settings.test_mode) {
     tick_check # Do the first "tick" of the timer now
 } else {    
     Write-Host "[$((Get-Date).toString())] First outdated-check will start in 1 minute..."
+    $mnuDate.Text = "First outdated-check in 1 minute..."
 }
 $timer.Start()  # First check will occur in 1 minute when the timer triggers. Don't do it right away to prevent hammering on start-up.
 
