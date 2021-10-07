@@ -6,7 +6,10 @@
 ### Added
 *
 ### Changes
-* Settings file no longer included in package/repo. If it doesn't exist then create it as default. This helps with upgrading.
+* Settings file no longer included in package/repo. If it doesn't exist then use defaults. This helps with upgrading.
+* Settings file only created when "Edit Settings File" is first used. Otherwise use defaults. This ensures that code leaves no footprints by default.
+* Settings file now found in `%APPDATA%`.
+* PID file now created in `%LOCALAPPDATA%`.
 ## [[v0.1.8](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.8)] 2021-10-05
 Improvements for chocolatey packaging and more stable with Windows Server 2012
 ### Added

@@ -22,20 +22,8 @@ $next_check_time = Get-Date
 $timer = New-Object System.Windows.Forms.Timer
 [array]$outdated = @()
 
-# When chocolately installs on Windows 2012 the $ENV:Temp can include a "chocolately" subdir, but not when started normally?!
-# So do something hacky to try and handle this
-$tmp1 = (Get-Item -force $ENV:Temp).FullName # Convert C:\Users\ADMINI~1\AppData\Local\Temp TO C:\Users\Administrator\AppData\Local\Temp
-$tmp2 = (Get-Item -force "$ENV:userprofile\AppData\Local\Temp").FullName
-if ($tmp1.Contains($tmp2) -and ($tmp1.Length -gt $tmp2.Length)) {
-    # This is the 2012 style we're seeing where $ENV:Temp = C:\Users\Administrator\AppData\Local\Temp\1\chocolatey
-    $pid_dir = $tmp2
-} else {
-    $pid_dir = $tmp1
-}
-$pid_file ="$pid_dir\ChocoButler.pid"
-
 # Default settings
-$settings = [PSCustomObject]@{check_delay_hours=12; auto_install=$False; silent=$False; test_mode=$False; exit_if_no_outdated=$False; immediate_first_check=$False}
+$settings = [PSCustomObject]@{check_delay_hours=12; auto_install=$False; silent=$False; exit_if_no_outdated=$False; immediate_first_check=$False; test_mode=$False}
 
 function assert($condition, $message, $title, $keep_pid) {
     if (-Not $condition) {
@@ -51,6 +39,9 @@ function assert($condition, $message, $title, $keep_pid) {
 }
 
 
+# Store a file with the process ID so we can kill existing instances on upgrade
+$pid_dir = $ENV:LOCALAPPDATA
+$pid_file ="$pid_dir\ChocoButler.pid"
 function pid_file_check {
     # Check if there's already a $pid file, and if not make one
     # This will be called every minute (by tick_check) but should be lightweight enough not to matter
@@ -81,23 +72,25 @@ function pid_file_check {
 }
 pid_file_check  # Create a .pid file containg the process id
 
-$settingsPath = $PSScriptRoot+"\settings.json"
+$settings_dir = "$ENV:APPDATA\ChocoButler"
+$settings_file = "$settings_dir\settings.json"
 function load_settings {
-    if (-Not(Test-Path $settingsPath)) {
-        Write-Host "[$((Get-Date).toString())] No settings.json file found (at $settingsPath). Creating one..."
-        $settings | ConvertTo-Json | Set-Content -Path $settingsPath
-    }    
-    assert (Test-Path $settingsPath) "Cannot find/create settings.json file:`n$($settingsPath)`nChocoButler will now exit." "ChocoButler Settings Error"
-    $s = Get-Content -Raw -Path $settingsPath | ConvertFrom-Json  # Will not fail if file missing
+    if (-Not(Test-Path $settings_file)) {
+        Write-Host "[$((Get-Date).toString())] No settings.json file found (at $settings_file). Using defaults."
+        Write-Host "[$((Get-Date).toString())] Default Settings: $settings"
+        return $settings
+    }
+    Write-Host "[$((Get-Date).toString())] Reading settings from file: $settings_file"    
+    $s = Get-Content -Raw -Path $settings_file | ConvertFrom-Json  # Will not fail if file missing
     $ok = ($s -is [System.Object])
-    assert $ok "Cannot load settings.json file. Syntax Error?:`n$($settingsPath)`nChocoButler will now exit." "ChocoButler Settings Error"
+    assert $ok "Cannot load settings.json file. Syntax Error?:`n$($settings_file)`nChocoButler will now exit." "ChocoButler Settings Error"
     # Ensure $s has same settings (Properties) as existing $settings
     Foreach ($k in $settings.PSObject.Properties.Name) {
         if (-Not(Get-Member -InputObject $s -Name $k)) {
             Write-Host "[$((Get-Date).toString())] No entry for ""$k"" found in settings file. Adding to settings.json with default: $($settings.($k))"
             $s | Add-Member -NotePropertyName $k -NotePropertyValue $settings.($k)
             # Write out the new settings file, this may be repetative for multiple new settings but meh
-            $s | ConvertTo-Json | Set-Content -Path $settingsPath
+            $s | ConvertTo-Json | Set-Content -Path $settings_file
         }
     }
     Foreach ($k in $s.PSObject.Properties.Name) {
@@ -252,7 +245,29 @@ $mnuAbout.Enabled = $false
 $mnuEditSettings = New-Object System.Windows.Forms.MenuItem
 $mnuEditSettings.Text = "Edit ChocoButler Settings file"
 $mnuEditSettings.Enabled = $true
-$mnuEditSettings.add_Click({ Invoke-Item $settingsPath })
+$mnuEditSettings.add_Click({
+    # Create a settings file if one doesn't exist
+    # First create the dir
+    if (-Not(Test-Path $settings_dir)) {
+        Write-Host "[$((Get-Date).toString())] Creating directory for settings: $settings_dir"
+        mkdir $settings_dir
+        if (-Not(Test-Path $settings_dir)) {
+            Write-Host "[$((Get-Date).toString())] Unable to create directory for settings: $settings_dir"
+            [System.Windows.Forms.MessageBox]::Show("Unable to create directory for settings:`n$settings_dir", "Settings Error", 'OK', 'Error')
+            return
+        }
+    }
+    if (-Not(Test-Path $settings_file)) {
+        Write-Host "[$((Get-Date).toString())] No settings.json file found (at $settings_file). Creating one with defaults."
+        $settings | ConvertTo-Json | Set-Content -Path $settings_file
+    }
+    if (-Not(Test-Path $settings_file)) {
+        Write-Host "[$((Get-Date).toString())] Unable to create settings file: $settings_file"
+        [System.Windows.Forms.MessageBox]::Show("Unable to create settings file:`n$settings_file", "Settings Error", 'OK', 'Error')
+        return
+    }
+    Invoke-Item $settings_file
+})
 
 $mnuShowReadme = New-Object System.Windows.Forms.MenuItem
 $mnuShowReadme.Text = "Open ChocoButler README (on web)"
