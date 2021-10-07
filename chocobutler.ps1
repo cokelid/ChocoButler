@@ -266,6 +266,7 @@ $mnuEditSettings.add_Click({
         [System.Windows.Forms.MessageBox]::Show("Unable to create settings file:`n$settings_file", "Settings Error", 'OK', 'Error')
         return
     }
+    [System.Windows.Forms.MessageBox]::Show("You must restart ChocoButler via 'Advanced' menu for settings-changes to take effect.", 'Restart ChocoButler', 'OK', 'Info')
     Invoke-Item $settings_file
 })
 
@@ -273,6 +274,23 @@ $mnuShowReadme = New-Object System.Windows.Forms.MenuItem
 $mnuShowReadme.Text = "Open ChocoButler README (on web)"
 $mnuShowReadme.Enabled = $true
 $mnuShowReadme.add_Click({ Start-Process 'https://github.com/cokelid/ChocoButler#readme' })
+
+$mnuRestart = New-Object System.Windows.Forms.MenuItem
+$mnuRestart.Text = "Restart ChocoButler"
+$mnuRestart.Enabled = $true
+$mnuRestart.add_Click({
+    $bat_path = "$PSScriptRoot\chocobutler.bat"
+    if (Test-Path $bat_path) {
+        $objNotifyIcon.Dispose()
+        $timer.Dispose()
+        Remove-Item -Path $pid_file        
+        Start-Process -FilePath $bat_path
+        if ($settings.test_mode) { Exit 1 } else { Stop-Process $pid }
+    } else {
+        [System.Windows.Forms.MessageBox]::Show("Unable to restart ChocoButler?`nCannot locate .bat file:`n$bat_path", 'Restart not possible', 'OK', 'Error')
+    }
+})
+
 
 $context_menu = New-Object System.Windows.Forms.ContextMenu
 
@@ -288,6 +306,7 @@ function build_menus {
     $mnuAdvanced.MenuItems.AddRange($mnuEditSettings)
     $mnuAdvanced.MenuItems.AddRange($mnuShowReadme)
     $mnuAdvanced.MenuItems.AddRange($mnuShowLog)
+    $mnuAdvanced.MenuItems.AddRange($mnuRestart)
     $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuExit)
 }
 build_menus

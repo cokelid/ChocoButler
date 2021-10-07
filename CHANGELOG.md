@@ -4,7 +4,7 @@
 ## Unreleased
 
 ### Added
-*
+* New menu entry to restart ChocoButler (under 'Advanced' menu). Useful after changing settings so that they take effect.
 ### Changes
 * Settings file no longer included in package/repo. If it doesn't exist then use defaults. This helps with upgrading.
 * Settings file only created when "Edit Settings File" is first used. Otherwise use defaults. This ensures that code leaves no footprints by default.
