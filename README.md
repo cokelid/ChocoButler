@@ -67,9 +67,9 @@ When no outdated packages are available for upgrade (e.g. post-install) the icon
 
 
 ## Configuration & Settings
-Settings exist in the `settings.json` text file. Edit this file to configure ChocoButler. The settings file will be created the first time ChocoButler runs and can be accessed via the `Advanced` menu in ChocoButler.
+Default settings (as detailed below) will be in place unless/until the user selects `Edit ChocoButler Settings file` via the `Advanced`. At that point a `settings.json` file will be created (in `%APPDATA%`).
 
-The following settings are available:
+Edit this file to configure ChocoButler. The following settings are available:
 
 ### `check_delay_hours`
 By default ChocoButler checks for outdated packages every 12 hours. To change this, edit the `settings.json` file and change the `check_delay_hours` value.
