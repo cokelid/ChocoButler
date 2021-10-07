@@ -266,7 +266,9 @@ $mnuEditSettings.add_Click({
         [System.Windows.Forms.MessageBox]::Show("Unable to create settings file:`n$settings_file", "Settings Error", 'OK', 'Error')
         return
     }
-    [System.Windows.Forms.MessageBox]::Show("You must restart ChocoButler via 'Advanced' menu for settings-changes to take effect.", 'Restart ChocoButler', 'OK', 'Info')
+    if (-Not $settings.silent) {
+        [System.Windows.Forms.MessageBox]::Show("You must restart ChocoButler via 'Advanced' menu for settings-changes to take effect.", 'Restart ChocoButler', 'OK', 'Info')
+    }
     Invoke-Item $settings_file
 })
 
