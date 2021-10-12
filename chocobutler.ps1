@@ -82,18 +82,23 @@ function pid_file_check {
 pid_file_check  # Create a .pid file containg the process id
 
 $settingsPath = $PSScriptRoot+"\settings.json"
-function load_settings {    
-    assert (Test-Path $settingsPath) "Cannot find settings.json file:`n$($settingsPath)`nChocoButler will now exit." "ChocoButler Settings Error"
-    $s = Get-Content -Raw -Path $settingsPath | ConvertFrom-Json  # Will not fail if file missing
+function load_settings {
+    if (-Not(Test-Path $settings_file)) {
+        Write-Host "[$((Get-Date).toString())] No settings.json file found (at $settings_file). Using defaults."
+        Write-Host "[$((Get-Date).toString())] Default Settings: $settings"
+        return $settings
+    }
+    Write-Host "[$((Get-Date).toString())] Reading settings from file: $settings_file"    
+    $s = Get-Content -Raw -Path $settings_file | ConvertFrom-Json  # Will not fail if file missing
     $ok = ($s -is [System.Object])
-    assert $ok "Cannot load settings.json file. Syntax Error?:`n$($settingsPath)`nChocoButler will now exit." "ChocoButler Settings Error"
+    assert $ok "Cannot load settings.json file. Syntax Error?:`n$($settings_file)`nChocoButler will now exit." "ChocoButler Settings Error"
     # Ensure $s has same settings (Properties) as existing $settings
     Foreach ($k in $settings.PSObject.Properties.Name) {
         if (-Not(Get-Member -InputObject $s -Name $k)) {
             Write-Host "[$((Get-Date).toString())] No entry for ""$k"" found in settings file. Adding to settings.json with default: $($settings.($k))"
             $s | Add-Member -NotePropertyName $k -NotePropertyValue $settings.($k)
             # Write out the new settings file, this may be repetative for multiple new settings but meh
-            $s | ConvertTo-Json | Set-Content -Path $settingsPath
+            $s | ConvertTo-Json | Set-Content -Path $settings_file
         }
     }
     Foreach ($k in $s.PSObject.Properties.Name) {
