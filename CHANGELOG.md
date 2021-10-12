@@ -10,6 +10,7 @@
 * Settings file only created when "Edit Settings File" is first used. Otherwise use defaults. This ensures that code leaves no footprints by default.
 * Settings file now found in `%APPDATA%`.
 * PID file now created in `%LOCALAPPDATA%`.
+* No longer use Chocolatey icons for licensing reasons (icons and logos not covered by Apache licence)
 ## [[v0.1.8](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.8)] 2021-10-05
 Improvements for chocolatey packaging and more stable with Windows Server 2012
 ### Added
