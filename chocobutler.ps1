@@ -548,8 +548,8 @@ function check_for_outdated {
 
 #---------------------------------------------------------------------------------------------------------
 
-$icon = [System.Drawing.Icon]::ExtractAssociatedIcon($PSScriptRoot+ "\chocolatey.ico")
-$icon_red = [System.Drawing.Icon]::ExtractAssociatedIcon($PSScriptRoot+ "\chocolatey_red.ico")
+$icon = [System.Drawing.Icon]::ExtractAssociatedIcon($PSScriptRoot+ "\chocobutler.ico")
+$icon_red = [System.Drawing.Icon]::ExtractAssociatedIcon($PSScriptRoot+ "\chocobutler_red.ico")
 
 $objNotifyIcon.Icon = $icon
 $objNotifyIcon.Text = "ChocoButler"

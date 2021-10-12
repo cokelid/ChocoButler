@@ -6,7 +6,7 @@ ChocoButler sits in the system tray (i.e. notification area) of Windows. Its ico
 
 Rather than running upgrades on a fixed schedule, ChocoButler alerts you when updates are available and allows you to start the upgrades at a time convenient for you. (If you just want regular, scheduled updates without user interaction there are better ways to achieve this, though you can do that too with ChocoButler if you really want to).
 
-![ChocoButler Red Chocolatey Icon](./img/chocolatey_icon_red_48x48.png?raw=true)
+![ChocoButler Brown Icon](./img/chocobutler_48x48.png?raw=true) ![ChocoButler Red Icon](./img/chocobutler_red_48x48.png?raw=true)
 
 ## Installation & Running
 In short: [download](https://github.com/cokelid/ChocoButler/archive/refs/tags/v0.1.8.zip) the files, unzip to a folder, double-click the `chocobutler.bat` file.
@@ -124,6 +124,8 @@ The test_mode leads to four changes in behaviour:
 4) On exit, `Exit` is called rather than `Stop-Process`. This is less likely to kill your IDE. YMMV.
 
 The above changes allow you to quickly test the main check->upgrade workflow, without having to wait for an actual outdated packages to appear.
+
+
 
 
 
