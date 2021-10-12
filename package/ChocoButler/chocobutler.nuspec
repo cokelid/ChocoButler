@@ -38,7 +38,7 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
     <authors>cokelid</authors>
     <!-- projectUrl is required for the community feed -->
     <projectUrl>https://github.com/cokelid/ChocoButler</projectUrl>
-    <iconUrl>https://rawcdn.githack.com/cokelid/ChocoButler/79c619419346ca733cb001bacaab929fd41fa9cc/img/chocolatey_icon_red_256x256.png</iconUrl>
+    <iconUrl>https://rawcdn.githack.com/cokelid/ChocoButler/2207c9e1af22ecca9bcab727fc0bdaa230ff1be0/img/chocobutler_512x512.png</iconUrl>
     <!-- If there is a license Url available, it is required for the community feed -->
     <licenseUrl>https://github.com/cokelid/ChocoButler/blob/main/LICENCE</licenseUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
