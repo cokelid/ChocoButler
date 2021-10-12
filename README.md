@@ -26,9 +26,9 @@ To set up ChocoButler to run every time you start Windows, copy a shortcut of th
 
 
 ## Usage
-ChocoButler will first check for outdated packages 1 minute after you start ChocoButler (and every N hours thereafter). This delay prevents your PC getting hammered at startup. If you're keen to check sooner, right-click on the Chocolatey icon in the system tray and click "Check for outdated packages now" (or change the `immediate_first_check` [setting](#immediate_first_check)).
+ChocoButler will first check for outdated packages 1 minute after you start ChocoButler (and every N hours thereafter). This delay prevents your PC getting hammered at startup. If you're keen to check sooner, right-click on the brown ChocoButler icon in the system tray and click "Check for outdated packages now" (or change the `immediate_first_check` [setting](#immediate_first_check)).
 
-Normally the regular blue/brown Chocolatey icon is shown in the system tray. If packages are available for upgrade, the icon will turn red. When outdated packages are found, a popup will display also.
+Normally the brown ChocoButler icon is shown in the system tray. If packages are available for upgrade, the icon will turn red. When outdated packages are found, a popup will display also.
 
 To install available upgrades, right-click on the system tray icon and select "Install upgrades...". This will install outdated package updates without prompting for confirmations. This effectively runs `choco upgrade <packages> --yes` under the covers.
 
@@ -40,7 +40,7 @@ See [screenshots](#screenshots) for examples.
 
 ## Screenshots
 
-On detecting outdated packages, an alert pop-up is shown, and the Chocolatey icon in the system tray (notification area) turns red:
+On detecting outdated packages, an alert pop-up is shown, and the ChocoButler icon in the system tray (notification area) turns red:
 
 ![Outdated package pop-up](./img/screenshot-01-alert.png?raw=true)
 
@@ -60,7 +60,7 @@ A pop-up displays when upgrades are complete:
 
 ![Upgrade success pop-up](./img/screenshot-05-success.png?raw=true)
 
-When no outdated packages are available for upgrade (e.g. post-install) the icon returns to the regular blue and brown Chocolatey icon. Hovering over the icon displays "No outdated packages":
+When no outdated packages are available for upgrade (e.g. post-install) the icon returns to the regular icon. Hovering over the icon displays "No outdated packages":
 
 ![Normal icon for no outdated packages](./img/screenshot-06-post-install.png?raw=true)
 
