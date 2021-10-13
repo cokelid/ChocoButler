@@ -88,7 +88,7 @@ By default, ChocoButler waits 1 minute before doing its first outdated-check; th
 ### `auto_install`
 By default, ChocoButler will alert you to available updates, and you then start the installation process (from the system tray icon) at a convenient time. This way you don't upgrade Zoom in the middle of a video meeting, say. However if you want the upgrade installation to occur automatically, and as soon as outdated packages are available, you can change the `auto_install` setting to `true`.
 
-Even with `auto_install` turned on, you'll probably still need to click a box to allow choco to make changes, and these requests could pop up at any time (and so could be annoying).
+Even with `auto_install` turned on, you'll probably still need to click OK in a dialog to allow choco to make changes, and these requests could pop up at any time (and so could be annoying).
 To avoid this, you could run the whole Powershell script as Admin, then you won't get prompted, but this is probably not a great idea from a security point of view. Overall ChocoButler was not built for fully automated updates, so this will likely be clunky.
 
 ### `test_mode`
@@ -123,7 +123,7 @@ The test_mode leads to four changes in behaviour:
 3) No changes are made during the installation of upgrades, it just does a dry-run (i.e. the `--noop` switch is passed to `choco upgrade`)
 4) On exit, `Exit` is called rather than `Stop-Process`. This is less likely to kill your IDE. YMMV.
 
-The above changes allow you to quickly test the main check->upgrade workflow, without having to wait for an actual outdated packages to appear.
+The above changes allow you to quickly test the main check->upgrade workflow, without having to wait for an actual outdated package to appear.
 
 
 
