@@ -267,7 +267,7 @@ $mnuEditSettings.add_Click({
         return
     }
     if (-Not $settings.silent) {
-        [System.Windows.Forms.MessageBox]::Show("You must restart ChocoButler via 'Advanced' menu for settings-changes to take effect.", 'Restart ChocoButler', 'OK', 'Info')
+        [System.Windows.Forms.MessageBox]::Show("If you make settings changes, you must restart ChocoButler for them to take effect (restart via 'Advanced' menu).", 'Restart ChocoButler', 'OK', 'Info')
     }
     Invoke-Item $settings_file
 })
