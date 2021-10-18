@@ -9,17 +9,18 @@ Rather than running upgrades on a fixed schedule, ChocoButler alerts you when up
 ![ChocoButler Brown Icon](./img/chocobutler_48x48.png?raw=true) ![ChocoButler Red Icon](./img/chocobutler_red_48x48.png?raw=true)
 
 ## Installation & Running
-In short: [download](https://github.com/cokelid/ChocoButler/archive/refs/tags/v0.1.8.zip) the files, unzip to a folder, double-click the `chocobutler.bat` file.
+The easiest way to install ChocoButler is via Chocolately. The [package](https://community.chocolatey.org/packages/chocobutler) in Chocolatey is named `chocobutler`. Use the Chocolatey GUI and search for "chocobutler" or install via the command line with `choco install chocobutler`. The Chocolatey package adds a shortcut to the startup folder so ChocoButler starts automatically with Windows, but it will not install any start menu icons.
+
+For manual installation, [download](https://github.com/cokelid/ChocoButler/archive/refs/tags/v0.1.8.zip) the files, unzip to a folder, double-click the `chocobutler.bat` file.
 
 Alternatively clone the [github repo](https://github.com/cokelid/ChocoButler.git) and run the `chocobutler.bat` file.
 
-To be clear, you don't need to install ChocoButler as such, just place the files in a folder, and double-click the `chocobutler.bat` file. If you don't like it, exit ChocoButler from the menu, and then delete the folder. ChocoButler makes no changes to your system (unless you use it to install updates of course).
-
-You will need a recent version of Chocolatey.
+Note that ChocoButler is "portable" and does not require any installation. Just place the files in a folder, and double-click the `chocobutler.bat` file. If you don't like the software, exit ChocoButler from the menu, and then delete the folder. ChocoButler makes no changes to your system (unless you use it to install updates of course). If you edit your settings via the "Advanced" menu in ChocoButler then a settings file will be created.
 
 If you want to see ChocoButler's logging messages, either run within Powershell (by running `chocobutler.ps1`), or run the `chocobutler_visible.bat` file instead. This .bat file runs ChocoButler with a visible console window, rather than hiding the window.
+
 ### Start with Windows
-To set up ChocoButler to run every time you start Windows, copy a shortcut of the `chocobutler.bat` file to your startup folder as follows:
+When installed via Chocolatey, a shortcut is added to your startup folder automatically, so that ChocoButler runs when Windows starts. To do this manually, copy a shortcut of the `chocobutler.bat` file to your startup folder as follows:
 
 1) Open start-up folder: Press `Win+R` (to open run dialog), and type `shell:startup`
 2) Right-click on the `chocobutler.bat` file and copy, then "Paste shortcut" in the startup folder
