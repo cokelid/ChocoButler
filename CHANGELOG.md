@@ -1,7 +1,9 @@
 # ChocoButler Changelog
 
 
-## Unreleased
+## [[v1.0.0](https://github.com/cokelid/ChocoButler/releases/tag/v1.0.0)] 2021-10-19
+
+Settings will NOT follow you from v0.1.7, *breaking change!*. Settings and PID files moved to new locations. New icons. New menu entry to allow restart of ChocoButler. This is version 1, the first major release!
 
 ### Added
 * New menu entry to restart ChocoButler (under 'Advanced' menu). Useful after changing settings so that they take effect.
@@ -11,6 +13,8 @@
 * Settings file now found in `%APPDATA%`
 * PID file now created in `%LOCALAPPDATA%`
 * No longer use Chocolatey icons for licensing reasons (their icons and logos are not covered by the Apache licence)
+
+
 ## [[v0.1.8](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.8)] 2021-10-05
 Improvements for chocolatey packaging and more stable with Windows Server 2012
 ### Added
@@ -19,6 +23,7 @@ Improvements for chocolatey packaging and more stable with Windows Server 2012
 ### Changes
 * More consistent temp-dir identification (for PID file) in Windows Server 2012 R2 (and elsewhere)
 * Create startup-shortcut with chocolatey's own Install-ChocolateyShortcut command, complete with nice icon
+
 
 ## [[v0.1.7](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.7)] 2021-10-05
 Allow ChocoButler to update itself via package. Repair choco.exe.old problem.
@@ -83,6 +88,7 @@ Only changes to test_mode.
 
 ## [[v0.1.0](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.0)] 2021-09-13
 First Release!
+
 
 
 

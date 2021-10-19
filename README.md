@@ -11,7 +11,7 @@ Rather than running upgrades on a fixed schedule, ChocoButler alerts you when up
 ## Installation & Running
 The easiest way to install ChocoButler is via Chocolately. The [package](https://community.chocolatey.org/packages/chocobutler) in Chocolatey is named `chocobutler`. Use the Chocolatey GUI and search for "chocobutler" or install via the command line with `choco install chocobutler`. The Chocolatey package adds a shortcut to the startup folder so ChocoButler starts automatically with Windows, but it will not install any start menu icons.
 
-For manual installation, [download](https://github.com/cokelid/ChocoButler/archive/refs/tags/v0.1.8.zip) the files, unzip to a folder, double-click the `chocobutler.bat` file.
+For manual installation, [download](https://github.com/cokelid/ChocoButler/archive/refs/tags/v1.0.0.zip) the files, unzip to a folder, double-click the `chocobutler.bat` file.
 
 Alternatively clone the [github repo](https://github.com/cokelid/ChocoButler.git) and run the `chocobutler.bat` file.
 
@@ -125,6 +125,7 @@ The test_mode leads to four changes in behaviour:
 4) On exit, `Exit` is called rather than `Stop-Process`. This is less likely to kill your IDE. YMMV.
 
 The above changes allow you to quickly test the main check->upgrade workflow, without having to wait for an actual outdated package to appear.
+
 
 
 
