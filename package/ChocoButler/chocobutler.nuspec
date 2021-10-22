@@ -21,7 +21,7 @@
     <description>
 ChocoButler is a small app that works with [Chocolatey](https://chocolatey.org/), periodically checking for outdated packages, and allowing them to be upgraded. ChocoButler sits in the system tray (i.e. notification area) of Windows. Its icon changes colour and an alert pops-up when upgrades are available.
 ## Installation
-The chocolatey installation will add a shortcut to the startup folder so ChocoButler automatically runs when Windows starts.
+The chocolatey installation adds a shortcut to the startup folder so ChocoButler starts-up automatically with Windows, and also adds an entry to the Start Menu.
     </description>
     <dependencies>
       <dependency id="chocolatey" version="0.11.1"/>

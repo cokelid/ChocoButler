@@ -1,9 +1,16 @@
 # ChocoButler Changelog
 
 
+## Unreleased
+
+### Added
+* When installed via Chocolatey, ChocoButler will run automatically when Windows starts up. This can now be prevented with the `/NoStartUp` parameter during installation. Previously this happened regardless.
+* When installed via Chocolatey, ChocoButler will now create a ChocoButler entry in the Start Menu. This can be prevented with the `/NoStartMenu` parameter during installation. Previously no Start Menu entry was created.
+
+
 ## [[v1.0.0](https://github.com/cokelid/ChocoButler/releases/tag/v1.0.0)] 2021-10-19
 
-Settings will NOT follow you from v0.1.7, *breaking change!*. Settings and PID files moved to new locations. New icons. New menu entry to allow restart of ChocoButler. This is version 1, the first major release!
+Settings will NOT follow you from v0.1.7, *breaking change!* Settings and PID files moved to new locations. New icons. New menu entry to allow restart of ChocoButler. This is version 1, the first major release!
 
 ### Added
 * New menu entry to restart ChocoButler (under 'Advanced' menu). Useful after changing settings so that they take effect.
@@ -88,6 +95,7 @@ Only changes to test_mode.
 
 ## [[v0.1.0](https://github.com/cokelid/ChocoButler/releases/tag/v0.1.0)] 2021-09-13
 First Release!
+
 
 
 

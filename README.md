@@ -9,25 +9,39 @@ Rather than running upgrades on a fixed schedule, ChocoButler alerts you when up
 ![ChocoButler Brown Icon](./img/chocobutler_48x48.png?raw=true) ![ChocoButler Red Icon](./img/chocobutler_red_48x48.png?raw=true)
 
 ## Installation & Running
-The easiest way to install ChocoButler is via Chocolately. The [package](https://community.chocolatey.org/packages/chocobutler) in Chocolatey is named `chocobutler`. Use the Chocolatey GUI and search for "chocobutler" or install via the command line with `choco install chocobutler`. The Chocolatey package adds a shortcut to the startup folder so ChocoButler starts automatically with Windows, but it will not install any start menu icons.
+### Install via Chocolatey
+The easiest way to install ChocoButler is via Chocolately. The [package](https://community.chocolatey.org/packages/chocobutler) in Chocolatey is named `chocobutler`. Use the Chocolatey GUI and search for "chocobutler" or install via the command line with `choco install chocobutler`.
 
+The Chocolatey package adds a shortcut to the startup folder so ChocoButler starts-up automatically with Windows, and also adds an entry to the Start Menu.
+
+To suppress the Start-Up or Start-Menu additions, install via the command line with the following params:
+```
+choco install chocobutler --params "'/NoStartUp'"
+choco install chocobutler --params "'/NoStartMenu'"
+choco install chocobutler --params "'/NoStartMenu /NoStartUp'"
+```
+
+### Portable or Manual Install
 For manual installation, [download](https://github.com/cokelid/ChocoButler/archive/refs/tags/v1.0.0.zip) the files, unzip to a folder, double-click the `chocobutler.bat` file.
 
 Alternatively clone the [github repo](https://github.com/cokelid/ChocoButler.git) and run the `chocobutler.bat` file.
 
-Note that ChocoButler is "portable" and does not require any installation. Just place the files in a folder, and double-click the `chocobutler.bat` file. If you don't like the software, exit ChocoButler from the menu, and then delete the folder. ChocoButler makes no changes to your system (unless you use it to install updates of course). If you edit your settings via the "Advanced" menu in ChocoButler then a settings file will be created.
+Note that ChocoButler is "portable" and does not require any actual installation. Just place the files in a folder, and double-click the `chocobutler.bat` file. If you don't like the software, exit ChocoButler from the menu, and then delete the folder. ChocoButler makes no changes to your system (unless you use it to install updates of course). If you edit your settings via the "Advanced" menu in ChocoButler then a settings file will be created.
 
+### Logging Output
 If you want to see ChocoButler's logging messages, either run within Powershell (by running `chocobutler.ps1`), or run the `chocobutler_visible.bat` file instead. This .bat file runs ChocoButler with a visible console window, rather than hiding the window.
 
 ### Start with Windows
-When installed via Chocolatey, a shortcut is added to your startup folder automatically, so that ChocoButler runs when Windows starts. To do this manually, copy a shortcut of the `chocobutler.bat` file to your startup folder as follows:
+When installed via Chocolatey, a shortcut is added to your startup folder, so that ChocoButler runs when Windows starts-up (this can be suppressed as described above in [Install via Chocolatey](#install_via_chocolatey)).
+
+To set up start-up manually, copy a shortcut of the `chocobutler.bat` file to your startup folder as follows:
 
 1) Open start-up folder: Press `Win+R` (to open run dialog), and type `shell:startup`
 2) Right-click on the `chocobutler.bat` file and copy, then "Paste shortcut" in the startup folder
 
 
 ## Usage
-ChocoButler will first check for outdated packages 1 minute after you start ChocoButler (and every N hours thereafter). This delay prevents your PC getting hammered at startup. If you're keen to check sooner, right-click on the brown ChocoButler icon in the system tray and click "Check for outdated packages now" (or change the `immediate_first_check` [setting](#immediate_first_check)).
+ChocoButler will first check for outdated packages 1 minute after you start ChocoButler (and every N hours thereafter). This delay prevents your PC getting hammered at start-up. If you're keen to check sooner, right-click on the brown ChocoButler icon in the system tray and click "Check for outdated packages now" (or change the `immediate_first_check` [setting](#immediate_first_check)).
 
 Normally the brown ChocoButler icon is shown in the system tray. If packages are available for upgrade, the icon will turn red. When outdated packages are found, a popup will display also.
 
