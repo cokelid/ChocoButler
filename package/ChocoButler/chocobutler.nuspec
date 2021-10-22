@@ -13,7 +13,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <projectSourceUrl>https://github.com/cokelid/ChocoButler</projectSourceUrl>
     <packageSourceUrl>https://github.com/cokelid/ChocoButler/tree/main/package/ChocoButler</packageSourceUrl>
-    <releaseNotes>https://github.com/cokelid/ChocoButler/blob/main/CHANGELOG.md#v100-2021-10-19</releaseNotes>
+    <releaseNotes>https://github.com/cokelid/ChocoButler/blob/main/CHANGELOG.md</releaseNotes>
     <docsUrl>https://github.com/cokelid/ChocoButler#readme</docsUrl>
     <bugTrackerUrl>https://github.com/cokelid/ChocoButler/issues</bugTrackerUrl>
     <tags>ChocoButler Chocolatey choco chocolatey-automatic</tags>
