@@ -1,7 +1,7 @@
-# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
+﻿# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
 # Code taken from: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-powershell-1.0/ff730952(v=technet.10)
 
-$VERSION = 'v1.0.0'
+$VERSION = 'v1.1.0-beta'
 
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
@@ -21,6 +21,7 @@ $objNotifyIcon = New-Object System.Windows.Forms.NotifyIcon
 $next_check_time = Get-Date
 $timer = New-Object System.Windows.Forms.Timer
 [array]$outdated = @()
+[array]$outdated_long = @()
 
 # Default settings
 $settings = [PSCustomObject]@{check_delay_hours=12; auto_install=$False; silent=$False; exit_if_no_outdated=$False; immediate_first_check=$False; test_mode=$False}
@@ -440,7 +441,8 @@ function do_upgrade_dialog {
     # Present a dialog asking if upgrade should proceed
     if ($outdated.Count -gt 0) {
         $timer.Stop()
-        $msg = "Proceed with package upgrades?`n$($outdated.Count) packages are available to upgrade:`n$($outdated.name -join ', ')"
+        $package_text = If ($outdated.Count -gt 1) {"packages are"} else {"package is"} 
+        $msg = "Proceed with package upgrades?`n$($outdated.Count) $package_text available to upgrade:`n$($outdated_long -join "`n")"
         $res = [System.Windows.Forms.MessageBox]::Show($msg,'ChocoButler','YesNo','Question')
         if ($res -eq 'Yes') {
             do_upgrade
@@ -481,8 +483,8 @@ function check_for_outdated {
             # We're in TEST MODE so, and there are no updates, so fake an outdated package (an @array containing one object)
             $outdated = @([PSCustomObject]@{
                 name     = 'GoogleChrome'
-                current  = '1.0'
-                available = '1.1'
+                current  = '94.0.4606.81'
+                available = '95.0.4638.54'
                 pinned = $false
             })
         }
@@ -500,6 +502,21 @@ function check_for_outdated {
         $ok = $false
     } Else {
         if ($outdated.Count -gt 0) {
+            # Fetch extra info on outdated packages via `choco info` and build a long-form outdated list 
+            $outdated_long = @()           
+            for ($i=0; $i -le $outdated.Length-1; $i++) {
+                $info_raw = ( (choco info $($outdated[$i].name) --version=$($outdated[$i].available) ) | Out-String )
+                if ($info_raw -match 'Title: (.+) \|') {
+                    $title = $Matches[1]
+                } else {
+                    $title = $outdated[$i].name
+                }
+                $outdated_long += "• $title  `[$($outdated[$i].name) v$($outdated[$i].available)`]"
+                Write-Host "[$((Get-Date).toString())] Available Package $($i+1)/$($outdated.Length)) $($outdated_long[$i])"
+                Add-Member -InputObject $outdated[$i] -NotePropertyName "title" -NotePropertyValue $title
+            }
+            Set-Variable -Name "outdated_long" -Value $outdated_long -Scope Script
+
             if ($outdated.Count -eq 1) {$plural = ""} Else {$plural = "s"}
             $objNotifyIcon.Icon = $icon_red
             $mnuInstall.Enabled = $true
@@ -599,14 +616,3 @@ $timer.Start()  # First check will occur in 1 minute when the timer triggers. Do
 # [System.GC]::Collect() # Help reduce memory
 $appContext = New-Object System.Windows.Forms.ApplicationContext
 [void][System.Windows.Forms.Application]::Run($appContext)
-
-
-
-
-
-
-
-
-
-
-
