@@ -294,22 +294,25 @@ $mnuRestart.add_Click({
     }
 })
 
-
 $context_menu = New-Object System.Windows.Forms.ContextMenu
 
 function build_menus {
     $objNotifyIcon.ContextMenu = $context_menu
     $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuInstall)
+    $objNotifyIcon.contextMenu.MenuItems.AddRange("-") # Separator
     $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuMsg)
     $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuDate)
+    $objNotifyIcon.contextMenu.MenuItems.AddRange("-") # Separator
     $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuCheck)
     $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuOpen)
     $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuAdvanced)
     $mnuAdvanced.MenuItems.AddRange($mnuAbout)
+    $mnuAdvanced.MenuItems.AddRange("-") # Separator
     $mnuAdvanced.MenuItems.AddRange($mnuEditSettings)
     $mnuAdvanced.MenuItems.AddRange($mnuShowReadme)
     $mnuAdvanced.MenuItems.AddRange($mnuShowLog)
     $mnuAdvanced.MenuItems.AddRange($mnuRestart)
+    $objNotifyIcon.contextMenu.MenuItems.AddRange("-") # Separator
     $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuExit)
 }
 build_menus
