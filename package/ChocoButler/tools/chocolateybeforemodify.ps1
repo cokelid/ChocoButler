@@ -1,6 +1,6 @@
-﻿# Kill any existing ChocoButlers by looking for the PID file
+# Kill any existing ChocoButlers by looking for the PID file
 
-# When chocolately installs on Windows 2012 the $ENV:Temp can include a "chocolately" subdir, but not when started normally?!
+# When chocolatey installs on Windows 2012 the $ENV:Temp can include a "chocolatey" subdir, but not when started normally?!
 # So do something hacky to try and handle this
 $pid_file ="$ENV:LOCALAPPDATA\ChocoButler.pid"
 
