@@ -1,4 +1,4 @@
-﻿# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
+# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
 # Code taken from: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-powershell-1.0/ff730952(v=technet.10)
 
 $VERSION = 'v1.1.0-beta'
@@ -106,17 +106,17 @@ $settings = load_settings
 
 # Check that choco is installed and it's recent
 $choco = Get-Command choco
-assert ($choco.Count -gt 0) "Cannot find a choco installation.`nEnsure 'choco.exe' is on your path.`nChocoButler will now exit." "Chocolately Not Installed"
-# Check Chocolately version. Don't use -v since that's not available in all versions of choco
-assert ((choco -? | Out-String) -match '(?m)^Chocolatey v([\d\.]+)') "Requires Chocolatey Version 0.11.1 or higher. Cannot determine your version.`nChocoButler will now exit" "Chocolately Version Error"  # (?m) modifies regex for multiline match
+assert ($choco.Count -gt 0) "Cannot find a choco installation.`nEnsure 'choco.exe' is on your path.`nChocoButler will now exit." "Chocolatey Not Installed"
+# Check Chocolatey version. Don't use -v since that's not available in all versions of choco
+assert ((choco -? | Out-String) -match '(?m)^Chocolatey v([\d\.]+)') "Requires Chocolatey Version 0.11.1 or higher. Cannot determine your version.`nChocoButler will now exit" "Chocolatey Version Error"  # (?m) modifies regex for multiline match
 $choco_ver = $Matches[1]  # The previous -match will populate $Matches if True
-assert ([System.Version]::Parse($choco_ver) -ge '0.11.1') "Requires Chocolatey Version 0.11.1 or higher.`nYou have $($Matches[0]).`nChocoButler will now exit." "Chocolately Version Error"
+assert ([System.Version]::Parse($choco_ver) -ge '0.11.1') "Requires Chocolatey Version 0.11.1 or higher.`nYou have $($Matches[0]).`nChocoButler will now exit." "Chocolatey Version Error"
       
 
 
 function check_for_choco_old_problem {
     # Check for the dreaded "choco.exe.old" problem...
-    # If chocolately updates itself it can start issuing errorts/warnings that prevent us from parsing choco's output correctly.
+    # If chocolatey updates itself it can start issuing errorts/warnings that prevent us from parsing choco's output correctly.
     # Check for this by running trivial 'choco source' command.
     # If it's goes wrong you'll see something like:
     #         "Access to the path 'C:\ProgramData\chocolatey\choco.exe.old' is denied."
@@ -135,7 +135,7 @@ function check_for_choco_old_problem {
             }
         }
     }
-    assert (-Not ($res.Count -gt 0)) "Chocolately is no longer working properly!`n`nIt is issuing warnings that prevents ChocoButler from parsing choco's data.`nThis is caused by Chocolatey updating itself.`nTry deleting the 'choco.exe.old' file as admin (see warning below for details).`n`nChocoButler will now exit.`n`nWARNING:`n$($res | Out-String)" "Chocolately Error"
+    assert (-Not ($res.Count -gt 0)) "Chocolatey is no longer working properly!`n`nIt is issuing warnings that prevents ChocoButler from parsing choco's data.`nThis is caused by Chocolatey updating itself.`nTry deleting the 'choco.exe.old' file as admin (see warning below for details).`n`nChocoButler will now exit.`n`nWARNING:`n$($res | Out-String)" "Chocolatey Error"
 }
 check_for_choco_old_problem
 
@@ -166,12 +166,12 @@ if ( $gui_obj.Count -gt 0 ) {
 # Create the menu entry for opening Chocolatey GUI
 $mnuOpen = New-Object System.Windows.Forms.MenuItem
 if ( ($gui -ne '') -and (Test-Path $gui) ) {
-    $mnuOpen.Text = "Open Chocolately GUI"
+    $mnuOpen.Text = "Open Chocolatey GUI"
     $mnuOpen.add_Click({
         Start-Process -FilePath $gui
     })
 } Else {
-    $mnuOpen.Text = '(Chocolately GUI not installed)'
+    $mnuOpen.Text = '(Chocolatey GUI not installed)'
     $mnuOpen.Enabled = $false
 }
 
@@ -388,7 +388,7 @@ function do_upgrade {
     if ($exitCode -eq 0) {  
         $mnuMsg.Text = "Upgrade successful!"
         $objNotifyIcon.BalloonTipIcon = "Info" # Should be one of: None, Info, Warning, Error  
-        $objNotifyIcon.BalloonTipText = "Chocolately UPGRADE SUCCESS!"
+        $objNotifyIcon.BalloonTipText = "Chocolatey UPGRADE SUCCESS!"
         $objNotifyIcon.BalloonTipTitle = "ChocoButler"
         if (-Not($settings.silent)) {$objNotifyIcon.ShowBalloonTip(4000)}
         $mnuInstall.Enabled = $false  # Worked, so don't want to rerun.
@@ -428,7 +428,7 @@ function do_upgrade {
         $mnuMsg.Text = $msg
         $objNotifyIcon.BalloonTipIcon = $type # Should be one of: None, Info, Warning, Error  
         $objNotifyIcon.BalloonTipText = $msg
-        $objNotifyIcon.BalloonTipTitle = "Chocolately Upgrade (ChocoButler)" 
+        $objNotifyIcon.BalloonTipTitle = "Chocolatey Upgrade (ChocoButler)" 
         $objNotifyIcon.ShowBalloonTip(30000)  # Possible error so show if silent
     }
     check_for_choco_old_problem
@@ -522,7 +522,7 @@ function check_for_outdated {
             $mnuInstall.Enabled = $true
             $objNotifyIcon.BalloonTipIcon = "Info" # Should be one of: None, Info, Warning, Error  
             $objNotifyIcon.BalloonTipText = "$($outdated.Count) outdated package$($plural):`n$outdated_csv"
-            $objNotifyIcon.BalloonTipTitle = "Chocolately Outdated Packages"
+            $objNotifyIcon.BalloonTipTitle = "Chocolatey Outdated Packages"
             # register-objectevent $objNotifyIcon BalloonTipClicked BalloonClicked_event -Action { do_upgrade_dialog }        
             if (-Not($settings.silent)) {$objNotifyIcon.ShowBalloonTip(10000)}
             Write-Host "[$((Get-Date).toString())] Outdated-check complete; 'choco outdated' exit code: $($LastExitCode)"
