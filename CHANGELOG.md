@@ -8,6 +8,7 @@
 * When installed via Chocolatey, ChocoButler will now create a ChocoButler entry in the Start Menu. This can be prevented with the `/NoStartMenu` parameter during installation. Previously no Start Menu entry was created.
 * Now fetches title of outdated packages for display prior to upgrade. E.g. shows "GitHub CLI" and not just "gh", since it might not be clear what the "gh" package is.
 * New separators between sections in menus to improve readability
+* New packages menu. This displays outdated packages and allows them to be individually upgraded.
 
 
 ## [[v1.0.0](https://github.com/cokelid/ChocoButler/releases/tag/v1.0.0)] 2021-10-19

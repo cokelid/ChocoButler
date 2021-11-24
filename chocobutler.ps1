@@ -217,11 +217,15 @@ $mnuExit.add_Click({
 })
 
 $mnuInstall = New-Object System.Windows.Forms.MenuItem
-$mnuInstall.Text = If ($settings.test_mode) {"[TEST MODE] Install upgrades..."} Else {"Install upgrades..."}
+$mnuInstall.Text = If ($settings.test_mode) {"[TEST MODE] Install all upgrades..."} Else {"Install all upgrades..."}
 $mnuInstall.Enabled = $false
 $mnuInstall.add_Click({
    do_upgrade_dialog   
 })
+
+$mnuPackages = New-Object System.Windows.Forms.MenuItem
+$mnuPackages.Text = "Outdated packages"
+$mnuPackages.Enabled = $false
 
 $mnuAdvanced = New-Object System.Windows.Forms.MenuItem
 $mnuAdvanced.Text = "Advanced"
@@ -296,6 +300,8 @@ $mnuRestart.add_Click({
 
 $context_menu = New-Object System.Windows.Forms.ContextMenu
 
+
+
 function build_menus {
     $objNotifyIcon.ContextMenu = $context_menu
     $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuInstall)
@@ -303,6 +309,7 @@ function build_menus {
     $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuMsg)
     $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuDate)
     $objNotifyIcon.contextMenu.MenuItems.AddRange("-") # Separator
+    $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuPackages)
     $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuCheck)
     $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuOpen)
     $objNotifyIcon.contextMenu.MenuItems.AddRange($mnuAdvanced)
@@ -325,41 +332,44 @@ function show_icon {
 }
 
 
-function do_upgrade {
+function do_upgrade() {
+    param($outdated_in)
+    if ($null -eq $outdated_in) {$o = $outdated} else {$o = $outdated_in}
     $timer.Stop()
     $old_mnuInstall_Enabled = $mnuInstall.Enabled
     $mnuInstall.Enabled = $false
     $mnuCheck.Enabled = $false
+    $mnuPackages.Enabled = $false
     $objNotifyIcon.Text = "ChocoButler`nUpgrading Packages..."
-    $mnuMsg.Text = "Upgrading $($outdated.Count) packages..."
+    $mnuMsg.Text = "Upgrading $($o.Count) packages..."
     
-    if ($outdated.name -contains 'chocobutler') {
+    if ($o.name -contains 'chocobutler') {
         Write-Host "[$((Get-Date).toString())] NOTE: Upgrade list contains ChocoButler itself... Killing icon and upgrading chocobutler last of all."
         $do_chocobutler_upgrade = $true
         # Since we're updating chocobutler, we need to kill the system tray icon since we'll be starting a new process
         # and ensure that chocobutler is updated last of all
-        for ($i=0; $i -le $outdated.Length-1; $i++) {
-            if ($outdated[$i].name -eq 'chocobutler') {$so = ($outdated.Length+100)} else {$so = $i}
+        for ($i=0; $i -le $o.Length-1; $i++) {
+            if ($o[$i].name -eq 'chocobutler') {$so = ($o.Length+100)} else {$so = $i}
             # Add sort-order
-            Add-Member -InputObject $outdated[$i] -NotePropertyName "sort_order" -NotePropertyValue $so
+            Add-Member -InputObject $o[$i] -NotePropertyName "sort_order" -NotePropertyValue $so
         }
-        $outdated = ($outdated | Sort-Object -Property sort_order)  # Sort chocobutler last
+        $o = ($o | Sort-Object -Property sort_order)  # Sort chocobutler last
         # Kill system tray icon before we update chocobutler
         $objNotifyIcon.Dispose()
     } else {
         $do_chocobutler_upgrade = $false
     }
 
-    $outdated_packages = $outdated.name -join ' '  # Space-separated list of packages
+    $outdated_names_ssv = $o.name -join ' '  # Space-separated list of packages
     $upgradeStart = Get-Date
     $mnuDate.Text = "Upgrading began: $($upgradeStart.toString())"
-    Write-Host "[$($upgradeStart.toString())] Upgrading packages: $outdated_packages"
+    Write-Host "[$($upgradeStart.toString())] Upgrading packages: $o_packages"
     # Run the choco command as admin.
     If ($settings.test_mode) {
         Write-Host "[$($upgradeStart.toString())] TEST MODE! Nothing will be updated. Running with --noop."
-        $arg_list = "upgrade $outdated_packages --yes --noop"
+        $arg_list = "upgrade $outdated_names_ssv --yes --noop"
     } Else {
-        $arg_list = "upgrade $outdated_packages --yes"
+        $arg_list = "upgrade $outdated_names_ssv --yes"
     }
     try {
         $proc = (Start-Process -FilePath "choco" -Verb RunAs -ArgumentList $arg_list -Wait -PassThru)
@@ -440,15 +450,17 @@ function do_upgrade {
     $timer.Start()
 }
 
-function do_upgrade_dialog {
+function do_upgrade_dialog($outdated_in) {
     # Present a dialog asking if upgrade should proceed
-    if ($outdated.Count -gt 0) {
+    if ($null -eq $outdated_in) {$o = $outdated} else {$o = $outdated_in}
+    if ($o.Count -gt 0) {
+        $o_bullet_str = $o.bullet -join "`n"  # Single string of bullets (with newlines) for display
         $timer.Stop()
-        $package_text = If ($outdated.Count -gt 1) {"packages are"} else {"package is"} 
-        $msg = "Proceed with package upgrades?`n$($outdated.Count) $package_text available to upgrade:`n$($outdated_long -join "`n")"
+        $plural = If ($o.Count -gt 1) {"s"} else {""} 
+        $msg = "Proceed with $($o.Count) package upgrade$($plural)?:`n$o_bullet_str"
         $res = [System.Windows.Forms.MessageBox]::Show($msg,'ChocoButler','YesNo','Question')
         if ($res -eq 'Yes') {
-            do_upgrade
+            do_upgrade($o)
             $next_check_time = (Get-Date) + (New-TimeSpan -Hours $settings.check_delay_hours)
             Write-Host "[$((Get-Date).toString())] Next outdated-check will be in $($settings.check_delay_hours) hours at approx: $($next_check_time.toString())"
             Set-Variable -Name "next_check_time" -Value $next_check_time -Scope Script  # Set the next time in the outer scope
@@ -460,10 +472,45 @@ function do_upgrade_dialog {
     }
 }
 
-function check_for_outdated {
+function do_upgrade_dialog_single($package_name) { # Update a single package via the Packages menu
+    # Find the package via its name
+    [array]$outdated_single = $outdated.where( { $_.name -eq $package_name } )
+    assert ($outdated_single.Count -eq 1) "Unable to find  '$package_name' on the oudated list, something went wrong?" "Upgrade Error"
+    do_upgrade_dialog($outdated_single)
+    check_for_outdated($false)  # Update the list of outdated pacakges but don't show an alert
+}
+
+# Clears and rebuilds the menu that shows outdated packages
+
+function package_menu_callback{
+    $sender_btn = $this  # $this will be the button that triggered to the callback
+    $pkg_name = $sender_btn.Tag  # Tag is where we stored the package name
+    do_upgrade_dialog_single($pkg_name)
+}
+function build_package_menus($packages){
+    $mnuPackages.MenuItems.Clear()  # Clear out existing package menus
+    if ($packages.Length -gt 0) {
+        for ($i=0; $i -le $packages.Length-1; $i++) {
+            $pkg_menu1 = New-Object System.Windows.Forms.MenuItem
+            $pkg_menu1.Text = "$($packages[$i].title)  `[$($packages[$i].name) v$($packages[$i].available)`]"
+            $pkg_menu1.Tag = $packages[$i].name  # Use this value in the click callback
+            $pkg_menu1.add_Click({package_menu_callback $this $_})
+            # Surely there must be a better way than building a string for evaluation?
+            # Save me from myself!
+            # $pkg_menu1.add_Click({Invoke-Expression "do_upgrade_dialog_single '$pname1'" }.GetNewClosure() )
+            $mnuPackages.MenuItems.AddRange($pkg_menu1)
+        }
+        $mnuPackages.Enabled = $true
+    } else {
+        $mnuPackages.Enabled = $false
+    }
+}
+function check_for_outdated($show_ballon_msg) {
+    if ($null -eq $show_ballon_msg) {$show_ballon_msg = $true}
     $timer.Stop()
     $mnuCheck.Enabled = $false
     $mnuInstall.Enabled = $false
+    $mnuPackages.Enabled = $false
     $checkDate = Get-Date
     $objNotifyIcon.Text = "ChocoButler`nChecking for outdated packages..."
     $mnuMsg.Text = "Checking for outdated packages..."
@@ -481,15 +528,21 @@ function check_for_outdated {
         [array]$outdated = $outdated.where( { [System.Version]$_.current -lt [System.Version]$_.available } )
     }
     if ($settings.test_mode) {
-        if (-Not ($outdated.Count -gt 0)) {
-            Write-Host "[$((Get-Date).toString())] TEST MODE! Faking an outdated package: 'GoogleChrome'"
-            # We're in TEST MODE so, and there are no updates, so fake an outdated package (an @array containing one object)
-            $outdated = @([PSCustomObject]@{
+        if (-Not ($outdated.Count -gt 1)) {
+            Write-Host "[$((Get-Date).toString())] TEST MODE! Faking outdated packages: 'GoogleChrome' and 'ChocoButler'"
+            # We're in TEST MODE so, and there are no updates, so fake 2 extra outdated packages
+            $outdated += [PSCustomObject]@{
                 name     = 'GoogleChrome'
                 current  = '94.0.4606.81'
                 available = '95.0.4638.54'
                 pinned = $false
-            })
+            }
+            $outdated += [PSCustomObject]@{
+                name     = 'chocobutler'
+                current  = '0.1.7'
+                available = '1.0.0'
+                pinned = $false
+            }
         }
     }
     $outdated_csv = $outdated.name -join ', '  # For display in bubble
@@ -514,9 +567,12 @@ function check_for_outdated {
                 } else {
                     $title = $outdated[$i].name
                 }
-                $outdated_long += "• $title  `[$($outdated[$i].name) v$($outdated[$i].available)`]"
-                Write-Host "[$((Get-Date).toString())] Available Package $($i+1)/$($outdated.Length)) $($outdated_long[$i])"
+                $bullet = "• $title  `[$($outdated[$i].name) v$($outdated[$i].available)`]"
+                $outdated_long += $bullet
+                Write-Host "[$((Get-Date).toString())] Available Package $($i+1)/$($outdated.Length)) $bullet"
                 Add-Member -InputObject $outdated[$i] -NotePropertyName "title" -NotePropertyValue $title
+                Add-Member -InputObject $outdated[$i] -NotePropertyName "bullet" -NotePropertyValue $bullet
+                
             }
             Set-Variable -Name "outdated_long" -Value $outdated_long -Scope Script
 
@@ -527,7 +583,7 @@ function check_for_outdated {
             $objNotifyIcon.BalloonTipText = "$($outdated.Count) outdated package$($plural):`n$outdated_csv"
             $objNotifyIcon.BalloonTipTitle = "Chocolately Outdated Packages"
             # register-objectevent $objNotifyIcon BalloonTipClicked BalloonClicked_event -Action { do_upgrade_dialog }        
-            if (-Not($settings.silent)) {$objNotifyIcon.ShowBalloonTip(10000)}
+            if (-Not($settings.silent) -and $show_ballon_msg) {$objNotifyIcon.ShowBalloonTip(10000)}
             Write-Host "[$((Get-Date).toString())] Outdated-check complete; 'choco outdated' exit code: $($LastExitCode)"
             Write-Host "[$((Get-Date).toString())] $($outdated.Count) outdated package$($plural): $outdated_csv"
             
@@ -549,6 +605,7 @@ function check_for_outdated {
             $objNotifyIcon.Icon = $icon
             $mnuInstall.Enabled = $false
         }
+        build_package_menus($outdated)
         $ok = $true
     }
     
