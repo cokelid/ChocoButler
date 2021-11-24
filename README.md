@@ -10,7 +10,7 @@ Rather than running upgrades on a fixed schedule, ChocoButler alerts you when up
 
 ## Installation & Running
 ### Install via Chocolatey
-The easiest way to install ChocoButler is via Chocolately. The [package](https://community.chocolatey.org/packages/chocobutler) in Chocolatey is named `chocobutler`. Use the Chocolatey GUI and search for "chocobutler" or install via the command line with `choco install chocobutler`.
+The easiest way to install ChocoButler is via Chocolatey. The [package](https://community.chocolatey.org/packages/chocobutler) in Chocolatey is named `chocobutler`. Use the Chocolatey GUI and search for "chocobutler" or install via the command line with `choco install chocobutler`.
 
 The Chocolatey package adds a shortcut to the startup folder so ChocoButler starts-up automatically with Windows, and also adds an entry to the Start Menu.
 
