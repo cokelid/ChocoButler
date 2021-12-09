@@ -1,4 +1,4 @@
-# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
+﻿# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
 # Code taken from: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-powershell-1.0/ff730952(v=technet.10)
 
 $VERSION = 'v1.1.0-beta'
@@ -363,7 +363,7 @@ function do_upgrade() {
     $outdated_names_ssv = $o.name -join ' '  # Space-separated list of packages
     $upgradeStart = Get-Date
     $mnuDate.Text = "Upgrading began: $($upgradeStart.toString())"
-    Write-Host "[$($upgradeStart.toString())] Upgrading packages: $o_packages"
+    Write-Host "[$($upgradeStart.toString())] Upgrading packages: $outdated_names_ssv"
     # Run the choco command as admin.
     If ($settings.test_mode) {
         Write-Host "[$($upgradeStart.toString())] TEST MODE! Nothing will be updated. Running with --noop."
@@ -567,7 +567,8 @@ function check_for_outdated($show_ballon_msg) {
                 } else {
                     $title = $outdated[$i].name
                 }
-                $bullet = "• $title  `[$($outdated[$i].name) v$($outdated[$i].available)`]"
+                # Below, previously used a bullet in place of the - hyphen, but couldn't get it to display reliably in Win 11, so switched
+                $bullet = "`-  $title  `[$($outdated[$i].name) v$($outdated[$i].available)`]"  
                 $outdated_long += $bullet
                 Write-Host "[$((Get-Date).toString())] Available Package $($i+1)/$($outdated.Length)) $bullet"
                 Add-Member -InputObject $outdated[$i] -NotePropertyName "title" -NotePropertyValue $title
