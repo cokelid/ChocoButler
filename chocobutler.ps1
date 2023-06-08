@@ -449,7 +449,7 @@ function do_upgrade() {
             $type = "Error"
             $mnuInstall.Enabled = $false
         } Else {
-            $msg = "Unknown error occurred. Exit code: $exitCode`n$($_.Exception)`nSee Log File for details"
+            $msg = "Unknown error occurred. Exit code: $exitCode. `n$($_.Exception). `nSee Log File for details"
             $type = "Error"
             $mnuInstall.Enabled = $false
         }
