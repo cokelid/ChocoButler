@@ -6,14 +6,28 @@ $VERSION = 'v1.1.0-beta'
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
 
-if ((Get-Host).Version -lt '4.0') {    
-    Write-Host "ChocoButler requires Powershell 4.0 or above."
-    [System.Windows.Forms.MessageBox]::Show("ChocoButler requires Powershell 4.0 or above.`nChocoButler will now exit.", "Powershell Version Error", 'OK', 'Error')
-    Exit 1
+# Can't check version of Powershell if using PS2EXE
+# if ((Get-Host).Version -lt '4.0') {
+#     $powershell_version = (Get-Host).Version
+#     Write-Host "ChocoButler requires Powershell 4.0 or above. You have: $powershell_version"
+#     [System.Windows.Forms.MessageBox]::Show("ChocoButler requires Powershell 4.0 or above.`nYou have Powershell version: $powershell_version`nChocoButler will now exit.", "Powershell Version Error", 'OK', 'Error')
+#     Exit 1
+# }
+
+Write-Host "[$((Get-Date).toString())] ChocoButler $VERSION starting..."
+Write-Host "[$((Get-Date).toString())] PID: $pid"
+
+# Adapted from: https://stackoverflow.com/questions/60121313/win-ps2exe-respect-the-location-of-the-resulting-executable
+if ([System.IO.Path]::GetExtension($PSCommandPath) -eq '.ps1') {
+    # Use this for ps1 script
+    $PSScriptPath = $PSScriptRoot
+} else {
+    # Use this for PS2EXE compiled script
+    $PSScriptPath = Split-Path -Parent (Convert-Path ([System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName))
 }
 
-Write-Host "[$((Get-Date).toString())] ChocoButler $VERSION starting... [$PSScriptRoot]"
-Write-Host "[$((Get-Date).toString())] PID: $pid"
+
+Write-Host "[$((Get-Date).toString())] PSScriptPath: $PSScriptPath"
 
 
 # INIT outer vars (Script scope) used in functions.
@@ -285,6 +299,7 @@ $mnuShowReadme.add_Click({ Start-Process 'https://github.com/cokelid/ChocoButler
 $mnuRestart = New-Object System.Windows.Forms.MenuItem
 $mnuRestart.Text = "Restart ChocoButler"
 $mnuRestart.Enabled = $true
+# TODO FIX THIS FOR PS2EXE
 $mnuRestart.add_Click({
     $bat_path = "$PSScriptRoot\chocobutler.bat"
     if (Test-Path $bat_path) {
@@ -626,8 +641,8 @@ function check_for_outdated($show_ballon_msg) {
 
 #---------------------------------------------------------------------------------------------------------
 
-$icon = [System.Drawing.Icon]::ExtractAssociatedIcon($PSScriptRoot+ "\chocobutler.ico")
-$icon_red = [System.Drawing.Icon]::ExtractAssociatedIcon($PSScriptRoot+ "\chocobutler_red.ico")
+$icon = [System.Drawing.Icon]::ExtractAssociatedIcon($PSScriptPath+ "\chocobutler.ico")
+$icon_red = [System.Drawing.Icon]::ExtractAssociatedIcon($PSScriptPath+ "\chocobutler_red.ico")
 
 $objNotifyIcon.Icon = $icon
 $objNotifyIcon.Text = "ChocoButler"
