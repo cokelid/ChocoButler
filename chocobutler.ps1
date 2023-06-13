@@ -20,14 +20,18 @@ Write-Host "[$((Get-Date).toString())] PID: $pid"
 # Adapted from: https://stackoverflow.com/questions/60121313/win-ps2exe-respect-the-location-of-the-resulting-executable
 if ([System.IO.Path]::GetExtension($PSCommandPath) -eq '.ps1') {
     # Use this for ps1 script
-    $PSScriptPath = $PSScriptRoot
+    $ChocoButlerDir = $PSScriptRoot
+    $ChocoButlerExe = $PSCommandPath
+    $IsPsScript = $true
 } else {
     # Use this for PS2EXE compiled script
-    $PSScriptPath = Split-Path -Parent (Convert-Path ([System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName))
+    $ChocoButlerExe = [System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
+    $ChocoButlerDir = Split-Path -Parent (Convert-Path ($ChocoButlerExe))
+    $IsPsScript = $false
 }
 
 
-Write-Host "[$((Get-Date).toString())] PSScriptPath: $PSScriptPath"
+Write-Host "[$((Get-Date).toString())] ChocoButlerDir: $ChocoButlerDir. ChocoButlerExe: $ChocoButlerExe"
 
 
 # INIT outer vars (Script scope) used in functions.
@@ -301,15 +305,20 @@ $mnuRestart.Text = "Restart ChocoButler"
 $mnuRestart.Enabled = $true
 # TODO FIX THIS FOR PS2EXE
 $mnuRestart.add_Click({
-    $bat_path = "$PSScriptRoot\chocobutler.bat"
-    if (Test-Path $bat_path) {
+    
+    if (Test-Path $ChocoButlerExe) {
         $objNotifyIcon.Dispose()
         $timer.Dispose()
-        Remove-Item -Path $pid_file        
-        Start-Process -FilePath $bat_path
+        Remove-Item -Path $pid_file
+        if ($IsPsScript) {
+            $bat_path = "$PSScriptRoot\chocobutler.bat"
+            Start-Process -FilePath $bat_path
+        } else {       
+            Start-Process -FilePath $ChocoButlerExe
+        }
         if ($settings.test_mode) { Exit 1 } else { Stop-Process $pid }
     } else {
-        [System.Windows.Forms.MessageBox]::Show("Unable to restart ChocoButler?`nCannot locate .bat file:`n$bat_path", 'Restart not possible', 'OK', 'Error')
+        [System.Windows.Forms.MessageBox]::Show("Unable to restart ChocoButler? `nCannot locate execuitable file: `n$ChocoButlerExe", 'Restart not possible', 'OK', 'Error')
     }
 })
 
@@ -359,7 +368,7 @@ function do_upgrade() {
     $mnuMsg.Text = "Upgrading $($o.Count) packages..."
     
     if ($o.name -contains 'chocobutler') {
-        Write-Host "[$((Get-Date).toString())] NOTE: Upgrade list contains ChocoButler itself... Killing icon and upgrading chocobutler last of all."
+        Write-Host "[$((Get-Date).toString())] NOTE: Upgrade list contains ChocoButler itself... Killing system-tray icon, and upgrading chocobutler last of all."
         $do_chocobutler_upgrade = $true
         # Since we're updating chocobutler, we need to kill the system tray icon since we'll be starting a new process
         # and ensure that chocobutler is updated last of all
@@ -532,11 +541,17 @@ function check_for_outdated($show_ballon_msg) {
     $mnuDate.Text = "Checking started: $($checkDate.toString())"
     Write-Host "[$($checkDate.toString())] Outdated-check started"
     check_for_choco_old_problem
+    $connectionProblem = $false
 
     $outdated_raw = choco outdated -r --ignore-pinned  
     # Exit codes: https://docs.chocolatey.org/en-us/choco/commands/outdated#exit-codes
     if ($null -eq $outdated_raw) {
         $outdated = @()
+    } ElseIf ($outdated_raw[0] -match 'Unable to load the service index') {
+        # Likely a problem with the internet connection, cannot fetch details
+        $outdated = @()
+        $connectionProblem = $true
+        $connectionError = $outdated_raw[0]
     } Else {
         [array]$outdated = (ConvertFrom-Csv -InputObject $outdated_raw -Delimiter '|' -Header 'name','current','available','pinned')
         # For packages installed from files (i.e. during testing) they can show up as outdated, even though current==available. So filter these.
@@ -558,6 +573,7 @@ function check_for_outdated($show_ballon_msg) {
                 available = '1.0.0'
                 pinned = $false
             }
+            $connectionProblem = $false
         }
     }
     $outdated_csv = $outdated.name -join ', '  # For display in bubble
@@ -613,8 +629,14 @@ function check_for_outdated($show_ballon_msg) {
             $objNotifyIcon.Text = "ChocoButler`n$($outdated.Count) outdated package$($plural): $outdated_csv_short"
             $mnuMsg.Text = "$($outdated.Count) outdated package$($plural): $outdated_csv_short"
             if ($settings.auto_install) { do_upgrade }
-
-        } else {
+        } ElseIf ($connectionProblem) {
+            $objNotifyIcon.Text = "ChocoButler`nUnable to connect. Internet problem?"
+            Write-Host "[$((Get-Date).toString())] Unable to connect to source. Error: $connectionError"
+            $mnuMsg.Text = "Unable to connect. Internet problem? See log."
+            $mnuDate.Text = "Connection problem occurred: $($checkDate.toString())"
+            $objNotifyIcon.Icon = $icon
+            $mnuInstall.Enabled = $false
+        } Else {
             $objNotifyIcon.Text = "ChocoButler`nNo outdated packages"
             Write-Host "[$((Get-Date).toString())] No outdated packages found"
             $mnuMsg.Text = "No outdated packages"
@@ -641,8 +663,8 @@ function check_for_outdated($show_ballon_msg) {
 
 #---------------------------------------------------------------------------------------------------------
 
-$icon = [System.Drawing.Icon]::ExtractAssociatedIcon($PSScriptPath+ "\chocobutler.ico")
-$icon_red = [System.Drawing.Icon]::ExtractAssociatedIcon($PSScriptPath+ "\chocobutler_red.ico")
+$icon = [System.Drawing.Icon]::ExtractAssociatedIcon($ChocoButlerDir+ "\chocobutler.ico")
+$icon_red = [System.Drawing.Icon]::ExtractAssociatedIcon($ChocoButlerDir+ "\chocobutler_red.ico")
 
 $objNotifyIcon.Icon = $icon
 $objNotifyIcon.Text = "ChocoButler"
@@ -653,7 +675,7 @@ $objNotifyIcon.Visible = $true
 #Register-ObjectEvent $objNotifyIcon BalloonTipClicked -sourceIdentifier click_event { do_upgrade_dialog } | Out-Null
          
 # Create a timer to check every minute if a new check is due.
-# Do polling like this to support hibernate/sleep so after come of sleep/hibernate, and if N hours since last check, then one will trigger.
+# Do polling like this to support hibernate/sleep so after coming out of sleep/hibernate, and if N hours since last check, then one will trigger.
 # This does making the timings of the checks less accurate (+- 1 minute) but that doesn't really matter.
 function tick_check {
     # This function gets called every time the timer ticks
