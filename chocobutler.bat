@@ -1,5 +1,6 @@
-:: The batch file starts ChocoButler with a hidden console window.
-:: If you want to see logging message in the console use chocobutler_visible.bat
+:: The batch file tries to start ChocoButler with a hidden console window, but the window is not hidden in Windows 11.
+:: To hide the window, use the .exe instead.
+:: If you want to see logging message in the console use chocobutler_visible.bat or chocobutler_visible.exe
 @ECHO OFF
 SET ThisDir=%~dp0
 SET ScriptPath=%ThisDir%chocobutler.ps1

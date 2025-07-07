@@ -535,6 +535,7 @@ function check_for_outdated($show_ballon_msg) {
     $mnuCheck.Enabled = $false
     $mnuInstall.Enabled = $false
     $mnuPackages.Enabled = $false
+    $mnuAdvanced.Enabled = $false
     $checkDate = Get-Date
     $objNotifyIcon.Text = "ChocoButler`nChecking for outdated packages..."
     $mnuMsg.Text = "Checking for outdated packages..."
@@ -547,11 +548,11 @@ function check_for_outdated($show_ballon_msg) {
     # Exit codes: https://docs.chocolatey.org/en-us/choco/commands/outdated#exit-codes
     if ($null -eq $outdated_raw) {
         $outdated = @()
-    } ElseIf ($outdated_raw[0] -match 'Unable to load the service index') {
+    } ElseIf (($outdated_raw -match 'Unable to load the service index') -or ($outdated_raw -match 'Unable to connect')) {
         # Likely a problem with the internet connection, cannot fetch details
         $outdated = @()
         $connectionProblem = $true
-        $connectionError = $outdated_raw[0]
+        $connectionError = $outdated_raw[0]  #TODO Error might not be in the first line so find it
     } Else {
         [array]$outdated = (ConvertFrom-Csv -InputObject $outdated_raw -Delimiter '|' -Header 'name','current','available','pinned')
         # For packages installed from files (i.e. during testing) they can show up as outdated, even though current==available. So filter these.
@@ -631,8 +632,8 @@ function check_for_outdated($show_ballon_msg) {
             if ($settings.auto_install) { do_upgrade }
         } ElseIf ($connectionProblem) {
             $objNotifyIcon.Text = "ChocoButler`nUnable to connect. Internet problem?"
-            Write-Host "[$((Get-Date).toString())] Unable to connect to source. Error: $connectionError"
-            $mnuMsg.Text = "Unable to connect. Internet problem? See log."
+            Write-Host "[$((Get-Date).toString())] Unable to connect. Error: $connectionError"
+            $mnuMsg.Text = "Unable to connect. (See log file, via Advanced menu)"
             $mnuDate.Text = "Connection problem occurred: $($checkDate.toString())"
             $objNotifyIcon.Icon = $icon
             $mnuInstall.Enabled = $false
@@ -657,6 +658,7 @@ function check_for_outdated($show_ballon_msg) {
 
     $timer.Start()
     $mnuCheck.Enabled = $true
+    $mnuAdvanced.Enabled = $true
     return $ok
 
 }

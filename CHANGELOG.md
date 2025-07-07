@@ -1,14 +1,18 @@
 # ChocoButler Changelog
 
 
-## Unreleased
+## [[v1.1.0](https://github.com/cokelid/ChocoButler/releases/tag/v1.1.0)]
+NOTE: This version was never release to Chocolately. It is superseded by version v2.
 
+### Changes
+* Now installs and uses an `.exe` file, rather than running a Powershell script. The `.exe` is 'compiled' using PS2EXE. The solves not being able to hide the terminal window under Windows 11, but also has sundry benefits.
 ### Added
 * When installed via Chocolatey, ChocoButler will run automatically when Windows starts up. This can now be prevented with the `/NoStartUp` parameter during installation. Previously this happened regardless.
 * When installed via Chocolatey, ChocoButler will now create a ChocoButler entry in the Start Menu. This can be prevented with the `/NoStartMenu` parameter during installation. Previously no Start Menu entry was created.
 * Now fetches title of outdated packages for display prior to upgrade. E.g. shows "GitHub CLI" and not just "gh", since it might not be clear what the "gh" package is.
 * New separators between sections in menus to improve readability
 * New packages menu. This displays outdated packages and allows them to be individually upgraded.
+* Improved handling of connection errors.
 
 
 ## [[v1.0.0](https://github.com/cokelid/ChocoButler/releases/tag/v1.0.0)] 2021-10-19
