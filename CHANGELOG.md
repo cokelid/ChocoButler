@@ -1,5 +1,12 @@
 # ChocoButler Changelog
 
+## [[v2.0.0](https://github.com/cokelid/ChocoButler/releases/tag/v2.0.0)] 2025-07-13
+### Changes
+* Version 2 is a complete rewrite of Chocobutler
+* Now a native Windows app (.NET)
+* No more Powershell and/or annoying command/terminal window in the background
+* Proper settings dialog, no need to edit a settings file
+
 
 ## [[v1.1.0](https://github.com/cokelid/ChocoButler/releases/tag/v1.1.0)]
 NOTE: This version was never release to Chocolately. It is superseded by version v2.

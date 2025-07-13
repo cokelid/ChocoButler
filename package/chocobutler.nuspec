@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>chocobutler</id>
+    <version>2.0.0</version>
+    <title>ChocoButler</title>
+    <authors>Cokelid</authors>
+    <projectUrl>https://github.com/cokelid/ChocoButler</projectUrl>
+    <licenseUrl>https://github.com/cokelid/ChocoButler/blob/main/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectSourceUrl>https://github.com/cokelid/ChocoButler</projectSourceUrl>
+    <docsUrl>https://github.com/cokelid/ChocoButler#readme</docsUrl>
+    <bugTrackerUrl>https://github.com/cokelid/ChocoButler/issues</bugTrackerUrl>
+    <tags>chocobutler chocolatey package-manager system-tray monitoring updates</tags>
+    <summary>A Windows system tray application for monitoring and updating Chocolatey packages</summary>
+    <description>
+ChocoButler is a lightweight Windows system tray application that monitors your Chocolatey packages for updates and provides an easy way to install them.
+
+## Features
+- **System Tray Integration**: Runs quietly in the system tray
+- **Automatic Monitoring**: Periodically checks for outdated packages
+- **Visual Notifications**: Changes tray icon colour when updates are available
+- **Easy Updates**: One-click package updates with administrator privileges
+- **Individual Package Control**: Update specific packages or all at once
+- **Settings Management**: Configure check intervals and notifications
+- **Chocolatey Integration**: Works with existing Chocolatey installation
+
+## Usage
+After installation, ChocoButler will appear in your system tray.
+
+- Right-click the icon to:
+    - View outdated packages
+    - Install updates
+    - Check for updates manually
+    - Access settings
+    - Open Chocolatey GUI (if installed)
+- Double-click the system tray icon to install updates.
+- Click notifications to install updates.
+
+## Requirements
+- Windows 10/11
+- .NET 8.0 Runtime
+- Chocolatey package manager
+
+## License
+This software is licensed under the GPL-3.0 License.
+    </description>
+    <releaseNotes>### Changes
+* Version 2 is a complete rewrite of Chocobutler
+* Now a native Windows app (.NET)
+* No more Powershell and/or annoying command/terminal window in the background
+* Proper settings dialog, no need to edit a settings file</releaseNotes>
+    <copyright>Copyright 2025 Cokelid (https://github.com/cokelid)</copyright>
+    <dependencies>
+      <dependency id="chocolatey" version="2.1.0" />
+      <dependency id="dotnet-8.0-desktopruntime" version="8.0.18" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package> 

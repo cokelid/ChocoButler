@@ -1,0 +1,50 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Rider and VS Code
+.idea/
+.vscode/
+
+# NuGet
+*.nupkg
+# The packages folder can be ignored if you use PackageReference
+packages/
+# Uncomment if you have tasks that create the project's static files in wwwroot
+#wwwroot/
+
+# Windows image file caches
+*.dbmdl
+
+# Application Insights
+ApplicationInsights.config
+
+# Publish outputs
+publish/
+
+# Others
+*.log
+*.vspscc
+*.vssscc
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Local history for JetBrains IDEs
+.localhistory/
+
+# Visual Studio Code settings
+.history/
+
+desktop.ini
+*.sln
