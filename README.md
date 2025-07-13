@@ -8,7 +8,7 @@ Rather than running upgrades on a fixed schedule, ChocoButler alerts you when up
 
 ![ChocoButler Brown Icon](./img/chocobutler_48x48.png?raw=true) ![ChocoButler Red Icon](./img/chocobutler_red_48x48.png?raw=true)
 
-## What's New in Version 2
+## What's New in Version 2 (July 2025)
 
 Version 2 is a complete rewrite of ChocoButler as a native Windows application:
 
@@ -43,7 +43,7 @@ Alternatively clone the [github repo](https://github.com/cokelid/ChocoButler.git
 
 ## Usage
 
-ChocoButler will first check for outdated packages on start-up, and every N hours thereafter). To check on-demand, right-click on the ChocoButler icon in the system tray and click "Check for outdated packages now".
+ChocoButler will first check for outdated packages on start-up, and every N hours thereafter. To check on-demand, right-click on the ChocoButler icon in the system tray and click "Check for outdated packages now".
 
 Normally the brown ChocoButler icon is shown in the system tray. If packages are available for upgrade, the icon will turn red. When outdated packages are found, a popup will display also.
 
@@ -71,6 +71,7 @@ See [screenshots](#screenshots) for examples.
 ## Screenshots
 
 On detecting outdated packages, an alert pop-up is shown:
+
 ![Outdated package pop-up](./img/screenshot-01-alert.png?raw=true)
 
 You may need to expand the system tray (notification area) with the up-arrow to see the icon. Hovering the mouse over the (red) icon displays the number of outdated packages:
@@ -100,7 +101,7 @@ Default settings will be in place unless/until the user selects `Settings...` vi
 The following settings are available:
 
 - **Periodically Check for Updates**  Enable or disable automatic periodic checks for outdated packages using the "Enable Periodic Checks" option in the Settings dialog.
-    - **Check Interval Hours** By default, ChocoButler checks for outdated packages every 12 hours. You can change how often checks occur by opening the Settings dialog from the system tray menu and adjusting the "Check Interval (hours)" option.
+    - **Check Interval Hours** By default, ChocoButler checks for outdated packages every 1 hour. You can change how often checks occur by opening the Settings dialog from the system tray menu and adjusting the "Check Interval (hours)" option.
 - **Show Notifications** Control whether notification pop-ups appear when outdated packages are found. This can be toggled on or off in the Settings dialog.
 - **Start with Windows** This setting controls whether ChocoButler will start with windows.
 
