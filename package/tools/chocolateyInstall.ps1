@@ -1,6 +1,5 @@
 $ErrorActionPreference = 'Stop'
 
-$packageName = 'chocobutler'
 $toolsDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $exePath = Join-Path $toolsDir 'ChocoButler.exe'
 
