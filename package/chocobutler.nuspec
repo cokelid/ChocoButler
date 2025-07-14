@@ -11,7 +11,7 @@
     <projectSourceUrl>https://github.com/cokelid/ChocoButler</projectSourceUrl>
     <docsUrl>https://github.com/cokelid/ChocoButler#readme</docsUrl>
     <bugTrackerUrl>https://github.com/cokelid/ChocoButler/issues</bugTrackerUrl>
-    <tags>chocobutler chocolatey package-manager system-tray monitoring updates</tags>
+    <tags>chocobutler system-tray monitoring updates</tags>
     <summary>A Windows system tray application for monitoring and updating Chocolatey packages</summary>
     <description>
 ChocoButler is a lightweight Windows system tray application that monitors your Chocolatey packages for updates and provides an easy way to install them.
