@@ -45,34 +45,6 @@ if ($createStartupShortcut -and (Test-Path $exePath)) {
     Write-Host "Startup shortcut creation skipped due to package parameter." -ForegroundColor Yellow
 }
 
-# Check if .NET 8.0 Runtime is installed
-$dotnetPath = Get-Command dotnet -ErrorAction SilentlyContinue
-if (-not $dotnetPath) {
-    # Try to refresh PATH and check again
-    $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("PATH","User")
-    $dotnetPath = Get-Command dotnet -ErrorAction SilentlyContinue
-}
-
-if (-not $dotnetPath) {
-    Write-Warning ".NET Runtime not found. This may be because:"
-    Write-Host "1. The .NET 8.0 Runtime dependency is still installing" -ForegroundColor Yellow
-    Write-Host "2. A shell restart is required to refresh PATH" -ForegroundColor Yellow
-    Write-Host "3. Manual installation is needed" -ForegroundColor Yellow
-    Write-Host "You can install it from: https://community.chocolatey.org/packages/dotnet-8.0-runtime or https://dotnet.microsoft.com/download/dotnet/8.0" -ForegroundColor Yellow
-} else {
-    $dotnetVersion = & dotnet --version
-    Write-Host "Found .NET version: $dotnetVersion" -ForegroundColor Green
-}
-
-# Check if Chocolatey is available
-$chocoPath = Get-Command choco -ErrorAction SilentlyContinue
-if (-not $chocoPath) {
-    Write-Warning "Chocolatey not found in PATH. ChocoButler requires Chocolatey to function."
-    Write-Host "You can install Chocolatey from: https://chocolatey.org/install" -ForegroundColor Yellow
-} else {
-    $chocoVersion = & choco --version
-    Write-Host "Found Chocolatey version: $chocoVersion" -ForegroundColor Green
-}
 
 Write-Host "`nChocoButler has been installed successfully!" -ForegroundColor Green
 Write-Host "The application will start automatically and appear in your system tray. This can be changed in the settings." -ForegroundColor Cyan
