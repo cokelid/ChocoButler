@@ -1,6 +1,5 @@
 $ErrorActionPreference = 'Stop'
 
-$packageName = 'chocobutler'
 $toolsDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
 # Stop any running instances of ChocoButler
