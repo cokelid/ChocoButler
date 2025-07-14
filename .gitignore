@@ -48,3 +48,4 @@ _ReSharper*/
 
 desktop.ini
 *.sln
+package/private/
