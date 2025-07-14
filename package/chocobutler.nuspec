@@ -6,9 +6,10 @@
     <title>ChocoButler</title>
     <authors>Cokelid</authors>
     <projectUrl>https://github.com/cokelid/ChocoButler</projectUrl>
+    <iconUrl>https://rawcdn.githack.com/cokelid/ChocoButler/2207c9e1af22ecca9bcab727fc0bdaa230ff1be0/img/chocobutler_512x512.png</iconUrl>
     <licenseUrl>https://github.com/cokelid/ChocoButler/blob/main/LICENSE</licenseUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <projectSourceUrl>https://github.com/cokelid/ChocoButler</projectSourceUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <projectSourceUrl>https://github.com/cokelid/ChocoButler/tree/main</projectSourceUrl>
     <docsUrl>https://github.com/cokelid/ChocoButler#readme</docsUrl>
     <bugTrackerUrl>https://github.com/cokelid/ChocoButler/issues</bugTrackerUrl>
     <tags>chocobutler system-tray monitoring updates</tags>
