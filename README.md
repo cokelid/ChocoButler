@@ -120,6 +120,10 @@ The following settings are available:
 
 This project is licensed under the GPL-3.0 License - see the [LICENSE](LICENSE) file for details.
 
+## Bug Reports or Enchancements
+
+To file a bug report, or request an enhancement, create a [GitHub Issue](https://github.com/cokelid/ChocoButler/issues).
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
